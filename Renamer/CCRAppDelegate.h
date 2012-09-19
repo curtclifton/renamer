@@ -12,4 +12,6 @@
 
 @property (assign) IBOutlet NSWindow *window;
 
+- (IBAction)rename:(id)sender;
+
 @end
