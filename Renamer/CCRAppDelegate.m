@@ -15,7 +15,7 @@
     // Insert code here to initialize your application
 }
 
-- (IBAction)rename:(id)sender;
+- (IBAction)renameAndFile:(id)sender;
 {
     NSLog(@"Rename all the things");
 }
