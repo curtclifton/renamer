@@ -11,9 +11,13 @@
 #import "CCRSourceList.h"
 #import "NSArray-CCRExtensions.h"
 
+static CGFloat MinimumSourceListWidth = 120.0;
+static CGFloat MinimumControlsPaneWidth = 358.0;
+
 @interface CCRAppDelegate ()
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (void)_addFilenamesToSourceList:(NSArray *)filenames;
+- (void)_windowDidResize:(NSNotification *)notification;
 @end
 
 @implementation CCRAppDelegate
@@ -61,6 +65,29 @@
  }
  */
 
+- (void)applicationWillFinishLaunching:(NSNotification *)notification;
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification;
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark NSSplitViewDelegate
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex;
+{
+    NSAssert(dividerIndex == 0, @"implementation assumes just one divider");
+    return MAX(MinimumSourceListWidth, proposedMinimumPosition);
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMaximumPosition ofSubviewAt:(NSInteger)dividerIndex;
+{
+    NSAssert(dividerIndex == 0, @"implementation assumes just one divider");
+    CGFloat allowedMaximumWidth = self.window.frame.size.width - MinimumControlsPaneWidth;
+    return MIN(allowedMaximumWidth, proposedMaximumPosition);
+}
 
 #pragma mark - Actions
 
@@ -100,5 +127,35 @@
     [self _addURLsToSourceList:urls];
 }
 
+- (void)_windowDidResize:(NSNotification *)notification;
+{
+    NSLog(@"Split view subviews: %@", self.splitView.subviews);
+    
+    NSSize sourceListSize = self.sourceListContainerView.frame.size;
+    NSSize controlsPaneSize = self.controlsPaneContainerView.frame.size;
+    NSLog(@"widths: %f, %f", sourceListSize.width, controlsPaneSize.width);
+    
+    if (sourceListSize.width >= MinimumSourceListWidth && controlsPaneSize.width >= MinimumControlsPaneWidth)
+        return;
+    
+    NSAssert(sourceListSize.width >= MinimumSourceListWidth || controlsPaneSize.width >= MinimumControlsPaneWidth, @"Minimum window size is set wrong if this is violated");
+    
+    if (sourceListSize.width < MinimumSourceListWidth) {
+        sourceListSize.width = MAX(sourceListSize.width, MinimumSourceListWidth);
+        controlsPaneSize.width = self.window.frame.size.width - sourceListSize.width;
+    } else if (controlsPaneSize.width < MinimumControlsPaneWidth) {
+        controlsPaneSize.width = MAX(controlsPaneSize.width, MinimumControlsPaneWidth);
+        sourceListSize.width = self.window.frame.size.width - controlsPaneSize.width;
+    }
+
+    NSLog(@"attempted widths: %f, %f", sourceListSize.width, controlsPaneSize.width);
+    
+    [self.sourceListContainerView setFrameSize:sourceListSize];
+    [self.controlsPaneContainerView setFrameSize:controlsPaneSize];
+    [self.splitView adjustSubviews];
+
+    [self.sourceListContainerView setNeedsDisplay:YES];
+    [self.controlsPaneContainerView setNeedsDisplay:YES];
+}
 
 @end
