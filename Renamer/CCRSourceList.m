@@ -25,7 +25,7 @@
     return self;
 }
 
-#pragma mark - 
+#pragma mark -
 #pragma mark NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView;
@@ -72,12 +72,16 @@
     }
     
     // Unique and sort.
-    NSArray *sortedURLs = [urls sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        return NSOrderedSame;
+    NSMutableSet *currentURLs = [NSMutableSet setWithArray:self.sourceURLs];
+    [currentURLs addObjectsFromArray:urls];
+    
+    NSArray *sortedURLs = [[currentURLs allObjects] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSURL *url1 = obj1;
+        NSURL *url2 = obj2;
+        return [[url1 lastPathComponent] localizedStandardCompare:[url2 lastPathComponent]];
     }];
     
-    // CCC, 10/28/2012. HERE: do the merge pass of merge sort.
-    [self.sourceURLs addObjectsFromArray:sortedURLs];
+    self.sourceURLs = [NSMutableArray arrayWithArray:sortedURLs];
 }
 
 @end
