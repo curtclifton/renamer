@@ -13,6 +13,9 @@
 		4D4CB4A316096C2800CD41B4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A116096C2800CD41B4 /* Credits.rtf */; };
 		4D4CB4A616096C2800CD41B4 /* CCRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */; };
 		4D4CB4A916096C2800CD41B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A716096C2800CD41B4 /* MainMenu.xib */; };
+		4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */; };
+		4DF18CAB163E06930002D0F3 /* NSArray-CCRExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */; };
+		4DF18CAD163E095B0002D0F3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4CB49716096C2800CD41B4 /* Foundation.framework */; };
 		F7E58A21163DDE7200E25112 /* DividerBar.png in Resources */ = {isa = PBXBuildFile; fileRef = F7E58A20163DDE7200E25112 /* DividerBar.png */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +34,10 @@
 		4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CCRAppDelegate.m; sourceTree = "<group>"; };
 		4D4CB4A816096C2800CD41B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4D4CB4B31609742200CD41B4 /* Renamer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Renamer.entitlements; sourceTree = "<group>"; };
+		4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRSourceList.h; sourceTree = "<group>"; };
+		4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRSourceList.m; sourceTree = "<group>"; };
+		4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray-CCRExtensions.m"; sourceTree = "<group>"; };
+		4DF18CAC163E07040002D0F3 /* NSArray-CCRExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray-CCRExtensions.h"; sourceTree = "<group>"; };
 		F7E58A20163DDE7200E25112 /* DividerBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DividerBar.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -39,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DF18CAD163E095B0002D0F3 /* Foundation.framework in Frameworks */,
 				4D4CB49316096C2800CD41B4 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,6 +99,10 @@
 				4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */,
 				4D4CB4A716096C2800CD41B4 /* MainMenu.xib */,
 				4D4CB49916096C2800CD41B4 /* Supporting Files */,
+				4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */,
+				4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */,
+				4DF18CAC163E07040002D0F3 /* NSArray-CCRExtensions.h */,
+				4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */,
 			);
 			path = Renamer;
 			sourceTree = "<group>";
@@ -175,6 +187,8 @@
 			files = (
 				4D4CB49F16096C2800CD41B4 /* main.m in Sources */,
 				4D4CB4A616096C2800CD41B4 /* CCRAppDelegate.m in Sources */,
+				4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */,
+				4DF18CAB163E06930002D0F3 /* NSArray-CCRExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
