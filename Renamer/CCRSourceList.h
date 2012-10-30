@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 
 @interface CCRSourceList : NSObject <NSTableViewDataSource>
+
+@property (nonatomic) BOOL hasContent; // affects controls via bindings
+
 - (void)addURLs:(NSArray *)urls;
 - (NSURL *)urlForRow:(NSInteger)row;
 @end

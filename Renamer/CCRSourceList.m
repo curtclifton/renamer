@@ -23,6 +23,7 @@
     self = [super init];
     if (self) {
         _sourceURLs = [NSMutableArray new];
+        self.hasContent = NO;
     }
     return self;
 }
@@ -59,9 +60,6 @@
 
 - (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id <NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation;
 {
-    NSLog(@"acceptDrop info: %@, row: %ld", info, row);
-    NSLog(@"drop operation %@", dropOperation == NSTableViewDropAbove ? @"Above" : @"On");
-    
     NSPasteboard *draggingPasteboard = [info draggingPasteboard];
     if ([[draggingPasteboard types] containsObject:NSFilenamesPboardType]) {
         NSArray *files = [draggingPasteboard propertyListForType:NSFilenamesPboardType];
@@ -93,6 +91,7 @@
     }];
     
     self.sourceURLs = [NSMutableArray arrayWithArray:sortedURLs];
+    self.hasContent = [self.sourceURLs count] > 0;
 }
 
 - (NSURL *)urlForRow:(NSInteger)row;
