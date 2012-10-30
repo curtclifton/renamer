@@ -10,7 +10,7 @@
 
 @class CCRSourceList;
 
-@interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSSplitViewDelegate>
+@interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSSplitViewDelegate, NSTableViewDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet CCRSourceList *sourceList;

@@ -8,6 +8,8 @@
 
 #import "CCRSourceList.h"
 
+#import "NSArray-CCRExtensions.h"
+
 @interface CCRSourceList ()
 @property (nonatomic, strong) NSMutableArray *sourceURLs;
 @end
@@ -44,24 +46,33 @@
     return [url lastPathComponent];
 }
 
-#pragma mark NSTableViewDelegate
-
-- (void)tableViewSelectionDidChange:(NSNotification *)notification;
+- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation;
 {
-    // CCC, 10/28/2012. Implement. Want to enable/initialize renaming UI if we have a selection.
-    NSLog(@"In %@, with notification: %@", NSStringFromSelector(_cmd), notification);
+    switch (dropOperation) {
+        case NSTableViewDropAbove:
+            return NSDragOperationMove;
+        case NSTableViewDropOn:
+        default:
+            return NSDragOperationNone;
+    }
 }
 
-- (void)tableViewSelectionIsChanging:(NSNotification *)notification;
+- (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id <NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation;
 {
-    // CCC, 10/28/2012. Implement. Want to disable renaming UI.
-    NSLog(@"In %@, with notification: %@", NSStringFromSelector(_cmd), notification);
-}
-
-- (NSString *)tableView:(NSTableView *)tableView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row mouseLocation:(NSPoint)mouseLocation;
-{
-    NSURL *url = self.sourceURLs[row];
-    return [url path];
+    NSLog(@"acceptDrop info: %@, row: %ld", info, row);
+    NSLog(@"drop operation %@", dropOperation == NSTableViewDropAbove ? @"Above" : @"On");
+    
+    NSPasteboard *draggingPasteboard = [info draggingPasteboard];
+    if ([[draggingPasteboard types] containsObject:NSFilenamesPboardType]) {
+        NSArray *files = [draggingPasteboard propertyListForType:NSFilenamesPboardType];
+        NSArray *urls = [files arrayByMappingBlock:^id(id object) {
+            return [NSURL fileURLWithPath:object];
+        }];
+        [self addURLs:urls];
+        [tableView reloadData];
+    }
+    
+    return YES;
 }
 
 #pragma mark - Public API
@@ -84,4 +95,8 @@
     self.sourceURLs = [NSMutableArray arrayWithArray:sortedURLs];
 }
 
+- (NSString *)tooltipForRow:(NSInteger)row;
+{
+    return [self.sourceURLs[row] path];
+}
 @end

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CCRSourceList : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+@interface CCRSourceList : NSObject <NSTableViewDataSource>
 - (void)addURLs:(NSArray *)urls;
+- (NSString *)tooltipForRow:(NSInteger)row;
 @end

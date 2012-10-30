@@ -68,6 +68,7 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
 - (void)applicationWillFinishLaunching:(NSNotification *)notification;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
+    [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -87,6 +88,25 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     NSAssert(dividerIndex == 0, @"implementation assumes just one divider");
     CGFloat allowedMaximumWidth = self.window.frame.size.width - MinimumControlsPaneWidth;
     return MIN(allowedMaximumWidth, proposedMaximumPosition);
+}
+
+#pragma mark NSTableViewDelegate
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification;
+{
+    // CCC, 10/28/2012. Implement. Want to enable/initialize renaming UI if we have a selection.
+    NSLog(@"In %@, with notification: %@", NSStringFromSelector(_cmd), notification);
+}
+
+- (void)tableViewSelectionIsChanging:(NSNotification *)notification;
+{
+    // CCC, 10/28/2012. Implement. Want to disable renaming UI.
+    NSLog(@"In %@, with notification: %@", NSStringFromSelector(_cmd), notification);
+}
+
+- (NSString *)tableView:(NSTableView *)tableView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row mouseLocation:(NSPoint)mouseLocation;
+{
+    return [self.sourceList tooltipForRow:row];
 }
 
 #pragma mark - Actions
