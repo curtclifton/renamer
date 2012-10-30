@@ -95,8 +95,8 @@
     self.sourceURLs = [NSMutableArray arrayWithArray:sortedURLs];
 }
 
-- (NSString *)tooltipForRow:(NSInteger)row;
+- (NSURL *)urlForRow:(NSInteger)row;
 {
-    return [self.sourceURLs[row] path];
+    return self.sourceURLs[row];
 }
 @end

@@ -10,5 +10,5 @@
 
 @interface CCRSourceList : NSObject <NSTableViewDataSource>
 - (void)addURLs:(NSArray *)urls;
-- (NSString *)tooltipForRow:(NSInteger)row;
+- (NSURL *)urlForRow:(NSInteger)row;
 @end

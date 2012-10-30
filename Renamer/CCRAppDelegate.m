@@ -106,7 +106,7 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
 
 - (NSString *)tableView:(NSTableView *)tableView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row mouseLocation:(NSPoint)mouseLocation;
 {
-    return [self.sourceList tooltipForRow:row];
+    return [[self.sourceList urlForRow:row] path];
 }
 
 #pragma mark - Actions
@@ -128,6 +128,11 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
         NSArray *urls = [openPanel URLs];
         [self _addURLsToSourceList:urls];
     }];
+}
+
+- (IBAction)quicklook:(id)sender {
+    // Throw up a sheet with a QLPreviewView. See headers: no docs still.
+    NSLog(@"quicklook the thing: %@", [self.sourceList urlForRow:self.sourceListTableView.selectedRow]);
 }
 
 #pragma mark - Private API

@@ -21,5 +21,6 @@
 
 - (IBAction)renameAndFile:(id)sender;
 - (IBAction)open:(id)sender;
+- (IBAction)quicklook:(id)sender;
 
 @end
