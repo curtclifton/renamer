@@ -18,6 +18,7 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (void)_addFilenamesToSourceList:(NSArray *)filenames;
 - (void)_windowDidResize:(NSNotification *)notification;
+- (void)_updatedEnabledState;
 @end
 
 @implementation CCRAppDelegate
@@ -69,6 +70,7 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
+    [self _updatedEnabledState];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -94,14 +96,7 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-    // CCC, 10/28/2012. Implement. Want to enable/initialize renaming UI if we have a selection.
-    NSLog(@"In %@, with notification: %@", NSStringFromSelector(_cmd), notification);
-}
-
-- (void)tableViewSelectionIsChanging:(NSNotification *)notification;
-{
-    // CCC, 10/28/2012. Implement. Want to disable renaming UI.
-    NSLog(@"In %@, with notification: %@", NSStringFromSelector(_cmd), notification);
+    [self _updatedEnabledState];
 }
 
 - (NSString *)tableView:(NSTableView *)tableView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row mouseLocation:(NSPoint)mouseLocation;
@@ -181,6 +176,14 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
 
     [self.sourceListContainerView setNeedsDisplay:YES];
     [self.controlsPaneContainerView setNeedsDisplay:YES];
+}
+
+- (void)_updatedEnabledState;
+{
+    self.enableControls = [self.sourceListTableView selectedRow] >= 0;
+    
+    // CCC, 10/29/2012. Validate fields also:
+    [self.renameAndFileButton setEnabled:self.enableControls];
 }
 
 @end
