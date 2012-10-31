@@ -12,7 +12,9 @@
 
 @interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSSplitViewDelegate, NSTableViewDelegate>
 
-@property (nonatomic) BOOL enableControls; // affects controls via bindings
+// bindings
+@property (nonatomic) BOOL enableControls;
+@property (nonatomic, strong) NSURL *destinationDirectory;
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet CCRSourceList *sourceList;
@@ -25,5 +27,6 @@
 - (IBAction)renameAndFile:(id)sender;
 - (IBAction)open:(id)sender;
 - (IBAction)quicklook:(id)sender;
+- (IBAction)chooseDestination:(id)sender;
 
 @end

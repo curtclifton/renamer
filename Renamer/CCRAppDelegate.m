@@ -130,6 +130,19 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     NSLog(@"quicklook the thing: %@", [self.sourceList urlForRow:self.sourceListTableView.selectedRow]);
 }
 
+- (IBAction)chooseDestination:(id)sender {
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    [openPanel setCanChooseDirectories:YES];
+    [openPanel setAllowsMultipleSelection:NO];
+    [openPanel setCanChooseFiles:NO];
+    
+    [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (result != NSFileHandlingPanelOKButton)
+            return;
+        self.destinationDirectory = [openPanel URL];
+    }];
+}
+
 #pragma mark - Private API
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
