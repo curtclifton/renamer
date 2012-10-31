@@ -2934,6 +2934,22 @@
 					<int key="connectionID">1325</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">tagComboBox</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="170471886"/>
+					</object>
+					<int key="connectionID">1331</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">titleComboBox</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="844195573"/>
+					</object>
+					<int key="connectionID">1332</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBBindingConnection" key="connection">
 						<string key="label">enabled: enableControls</string>
 						<reference key="source" ref="366836468"/>
@@ -6100,7 +6116,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1330</int>
+			<int key="maxID">1332</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6109,7 +6125,6 @@
 					<string key="superclassName">NSObject</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="chooseDestination:">id</string>
-						<string key="fieldValueDidChange:">id</string>
 						<string key="includeDayChanged:">id</string>
 						<string key="open:">id</string>
 						<string key="quicklook:">id</string>
@@ -6118,10 +6133,6 @@
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="chooseDestination:">
 							<string key="name">chooseDestination:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="fieldValueDidChange:">
-							<string key="name">fieldValueDidChange:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="includeDayChanged:">
@@ -6152,6 +6163,8 @@
 						<string key="sourceListContainerView">NSView</string>
 						<string key="sourceListTableView">NSTableView</string>
 						<string key="splitView">NSSplitView</string>
+						<string key="tagComboBox">NSComboBox</string>
+						<string key="titleComboBox">NSComboBox</string>
 						<string key="window">NSWindow</string>
 						<string key="yearTextField">NSTextField</string>
 					</dictionary>
@@ -6195,6 +6208,14 @@
 						<object class="IBToOneOutletInfo" key="splitView">
 							<string key="name">splitView</string>
 							<string key="candidateClassName">NSSplitView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="tagComboBox">
+							<string key="name">tagComboBox</string>
+							<string key="candidateClassName">NSComboBox</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="titleComboBox">
+							<string key="name">titleComboBox</string>
+							<string key="candidateClassName">NSComboBox</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="window">
 							<string key="name">window</string>

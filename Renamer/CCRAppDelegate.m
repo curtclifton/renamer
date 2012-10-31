@@ -144,6 +144,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
         if (result != NSFileHandlingPanelOKButton)
             return;
         self.destinationDirectory = [openPanel URL];
+        [self _updatedEnabledState];
     }];
 }
 
@@ -215,7 +216,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
         } else {
             dateStamp = [NSString stringWithFormat:@"%@-%@", self.yearTextField.stringValue, self.monthTextField.stringValue];
         }
-        computedName = [NSString stringWithFormat:@"%@ - %@ - %@", dateStamp, @"tag", @"title"];
+        computedName = [NSString stringWithFormat:@"%@ - %@ - %@", dateStamp, self.tagComboBox.stringValue, self.titleComboBox.stringValue];
     }
     
     BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;

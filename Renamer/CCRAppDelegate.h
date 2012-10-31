@@ -29,6 +29,8 @@
 @property (weak) IBOutlet NSTextField *monthTextField;
 @property (weak) IBOutlet NSTextField *dayTextField;
 @property (weak) IBOutlet NSButton *includeDayCheckbox;
+@property (weak) IBOutlet NSComboBox *tagComboBox;
+@property (weak) IBOutlet NSComboBox *titleComboBox;
 
 
 - (IBAction)renameAndFile:(id)sender;
