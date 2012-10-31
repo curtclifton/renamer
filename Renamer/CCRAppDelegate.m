@@ -30,7 +30,6 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
 {
-    NSLog(@"opening* %@", filename);
     NSArray *filenames = [NSArray arrayWithObject:filename];
     [self _addFilenamesToSourceList:filenames];
     return YES;
@@ -106,14 +105,6 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
     return [[self.sourceList urlForRow:row] path];
 }
 
-#pragma mark NSTextViewDelegate
-
-- (void)textDidChange:(NSNotification *)aNotification;
-{
-    // CCC, 10/30/2012. implement
-    NSLog(@"change");
-}
-
 #pragma mark - Actions
 
 - (IBAction)renameAndFile:(id)sender;
@@ -165,7 +156,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 {
-    NSLog(@"notification: %@", aNotification);
+    [self _updatedEnabledState];
 }
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
@@ -185,11 +176,8 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 
 - (void)_windowDidResize:(NSNotification *)notification;
 {
-    NSLog(@"Split view subviews: %@", self.splitView.subviews);
-    
     NSSize sourceListSize = self.sourceListContainerView.frame.size;
     NSSize controlsPaneSize = self.controlsPaneContainerView.frame.size;
-    NSLog(@"widths: %f, %f", sourceListSize.width, controlsPaneSize.width);
     
     if (sourceListSize.width >= MinimumSourceListWidth && controlsPaneSize.width >= MinimumControlsPaneWidth)
         return;
@@ -204,8 +192,6 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
         sourceListSize.width = self.window.frame.size.width - controlsPaneSize.width;
     }
 
-    NSLog(@"attempted widths: %f, %f", sourceListSize.width, controlsPaneSize.width);
-    
     [self.sourceListContainerView setFrameSize:sourceListSize];
     [self.controlsPaneContainerView setFrameSize:controlsPaneSize];
     [self.splitView adjustSubviews];
