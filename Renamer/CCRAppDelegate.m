@@ -12,9 +12,11 @@
 #import "NSArray-CCRExtensions.h"
 
 static CGFloat MinimumSourceListWidth = 120.0;
-static CGFloat MinimumControlsPaneWidth = 358.0;
+static CGFloat MinimumControlsPaneWidth = 364.0;
 
 @interface CCRAppDelegate ()
+- (void)controlTextDidChange:(NSNotification *)aNotification;
+
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (void)_addFilenamesToSourceList:(NSArray *)filenames;
 - (void)_windowDidResize:(NSNotification *)notification;
@@ -104,6 +106,14 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     return [[self.sourceList urlForRow:row] path];
 }
 
+#pragma mark NSTextViewDelegate
+
+- (void)textDidChange:(NSNotification *)aNotification;
+{
+    // CCC, 10/30/2012. implement
+    NSLog(@"change");
+}
+
 #pragma mark - Actions
 
 - (IBAction)renameAndFile:(id)sender;
@@ -111,7 +121,8 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     NSLog(@"Rename all the things");
 }
 
-- (IBAction)open:(id)sender {
+- (IBAction)open:(id)sender;
+{
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     [openPanel setCanChooseDirectories:YES];
     [openPanel setAllowsMultipleSelection:YES];
@@ -125,12 +136,14 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     }];
 }
 
-- (IBAction)quicklook:(id)sender {
+- (IBAction)quicklook:(id)sender;
+{
     // Throw up a sheet with a QLPreviewView. See headers: no docs still.
     NSLog(@"quicklook the thing: %@", [self.sourceList urlForRow:self.sourceListTableView.selectedRow]);
 }
 
-- (IBAction)chooseDestination:(id)sender {
+- (IBAction)chooseDestination:(id)sender;
+{
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     [openPanel setCanChooseDirectories:YES];
     [openPanel setAllowsMultipleSelection:NO];
@@ -143,7 +156,17 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     }];
 }
 
+- (IBAction)includeDayChanged:(id)sender;
+{
+    [self _updatedEnabledState];
+}
+
 #pragma mark - Private API
+
+- (void)controlTextDidChange:(NSNotification *)aNotification;
+{
+    NSLog(@"notification: %@", aNotification);
+}
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
 {
@@ -196,7 +219,17 @@ static CGFloat MinimumControlsPaneWidth = 358.0;
     self.enableControls = [self.sourceListTableView selectedRow] >= 0;
     
     // CCC, 10/29/2012. Validate fields also:
-    [self.renameAndFileButton setEnabled:self.enableControls];
+    BOOL fieldsValid = YES;
+    BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
+    [self.renameAndFileButton setEnabled:renameValid];
+
+    NSString *computedName = @"—";
+    if (self.enableControls) {
+         // CCC, 10/30/2012. compute
+        computedName = @"Hello";
+    }
+    
+    [self.computedNameTextField setStringValue:computedName];
 }
 
 @end

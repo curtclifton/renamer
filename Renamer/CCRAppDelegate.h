@@ -23,10 +23,18 @@
 @property (weak) IBOutlet NSView *sourceListContainerView;
 @property (weak) IBOutlet NSView *controlsPaneContainerView;
 @property (weak) IBOutlet NSButton *renameAndFileButton;
+@property (weak) IBOutlet NSTextField *computedNameTextField;
+
+@property (weak) IBOutlet NSTextField *yearTextField;
+@property (weak) IBOutlet NSTextField *monthTextField;
+@property (weak) IBOutlet NSTextField *dayTextField;
+@property (weak) IBOutlet NSButton *includeDayCheckbox;
+
 
 - (IBAction)renameAndFile:(id)sender;
 - (IBAction)open:(id)sender;
 - (IBAction)quicklook:(id)sender;
 - (IBAction)chooseDestination:(id)sender;
+- (IBAction)includeDayChanged:(id)sender;
 
 @end
