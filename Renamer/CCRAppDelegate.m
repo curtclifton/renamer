@@ -206,15 +206,21 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
     
     // CCC, 10/29/2012. Validate fields also:
     BOOL fieldsValid = YES;
+    NSString *computedName = @"—";
+    if (self.enableControls) {
+        // CCC, 10/30/2012. compute
+        NSString *dateStamp;
+        if (self.includeDayCheckbox.state == NSOnState) {
+            dateStamp = [NSString stringWithFormat:@"%@-%@-%@", self.yearTextField.stringValue, self.monthTextField.stringValue, self.dayTextField.stringValue];
+        } else {
+            dateStamp = [NSString stringWithFormat:@"%@-%@", self.yearTextField.stringValue, self.monthTextField.stringValue];
+        }
+        computedName = [NSString stringWithFormat:@"%@ - %@ - %@", dateStamp, @"tag", @"title"];
+    }
+    
     BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
     [self.renameAndFileButton setEnabled:renameValid];
 
-    NSString *computedName = @"—";
-    if (self.enableControls) {
-         // CCC, 10/30/2012. compute
-        computedName = @"Hello";
-    }
-    
     [self.computedNameTextField setStringValue:computedName];
 }
 
