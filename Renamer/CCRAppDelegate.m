@@ -224,7 +224,11 @@ static NSAttributedString *longSeparator;
         stringToAppend = [[NSAttributedString alloc] initWithString:errorString attributes:@{NSForegroundColorAttributeName:[NSColor redColor]}];
         valid = NO;
     } else {
-        stringToAppend = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld", value]];
+        NSInteger numberOfDigits = [errorString length];
+        NSString *padding = [@"" stringByPaddingToLength:numberOfDigits withString:@"0" startingAtIndex:0];
+        NSString *paddedValue = [padding stringByAppendingString:[NSString stringWithFormat:@"%ld", value]];
+        NSString *clippedValue = [paddedValue substringFromIndex:[paddedValue length] - numberOfDigits];
+        stringToAppend = [[NSAttributedString alloc] initWithString:clippedValue];
         valid = YES;
     }
     [string appendAttributedString:stringToAppend];
@@ -249,6 +253,22 @@ static NSAttributedString *longSeparator;
     return valid;
 }
 
+- (NSInteger)_daysInMonth;
+{
+    NSInteger year = self.yearTextField.integerValue;
+    NSInteger month = self.monthTextField.integerValue;
+    
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    [components setYear:year];
+    [components setMonth:month];
+    [components setDay:1];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    NSRange range = [calendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:[calendar dateFromComponents:components]];
+    NSLog(@"range: %@", NSStringFromRange(range));
+    return range.length;
+}
+
 - (void)_updateEnabledState;
 {
     self.enableControls = [self.sourceListTableView selectedRow] >= 0;
@@ -263,8 +283,9 @@ static NSAttributedString *longSeparator;
         
         if (self.includeDayCheckbox.state == NSOnState) {
             [computedName appendAttributedString:shortSeparator];
-            // CCC, 11/1/2012. Calculate the number of days in the month.
-            fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.dayTextField minimum:1 maximum:31 attributedString:computedName errorString:@"dd"] && fieldsValid;
+            
+            NSInteger daysInMonth = fieldsValid ? [self _daysInMonth] : 31;
+            fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.dayTextField minimum:1 maximum:daysInMonth attributedString:computedName errorString:@"dd"] && fieldsValid;
         }
         
         [computedName appendAttributedString:longSeparator];
