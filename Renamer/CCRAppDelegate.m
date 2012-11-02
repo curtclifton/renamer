@@ -20,7 +20,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (void)_addFilenamesToSourceList:(NSArray *)filenames;
 - (void)_windowDidResize:(NSNotification *)notification;
-- (void)_updatedEnabledState;
+- (void)_updateEnabledState;
 @end
 
 @implementation CCRAppDelegate
@@ -71,7 +71,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
-    [self _updatedEnabledState];
+    [self _updateEnabledState];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -97,7 +97,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
-    [self _updatedEnabledState];
+    [self _updateEnabledState];
 }
 
 - (NSString *)tableView:(NSTableView *)tableView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row mouseLocation:(NSPoint)mouseLocation;
@@ -144,20 +144,20 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
         if (result != NSFileHandlingPanelOKButton)
             return;
         self.destinationDirectory = [openPanel URL];
-        [self _updatedEnabledState];
+        [self _updateEnabledState];
     }];
 }
 
 - (IBAction)includeDayChanged:(id)sender;
 {
-    [self _updatedEnabledState];
+    [self _updateEnabledState];
 }
 
 #pragma mark - Private API
 
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 {
-    [self _updatedEnabledState];
+    [self _updateEnabledState];
 }
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
@@ -201,7 +201,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
     [self.controlsPaneContainerView setNeedsDisplay:YES];
 }
 
-- (void)_updatedEnabledState;
+- (void)_updateEnabledState;
 {
     self.enableControls = [self.sourceListTableView selectedRow] >= 0;
     
@@ -209,7 +209,6 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
     BOOL fieldsValid = YES;
     NSString *computedName = @"—";
     if (self.enableControls) {
-        // CCC, 10/30/2012. compute
         NSString *dateStamp;
         if (self.includeDayCheckbox.state == NSOnState) {
             dateStamp = [NSString stringWithFormat:@"%@-%@-%@", self.yearTextField.stringValue, self.monthTextField.stringValue, self.dayTextField.stringValue];
@@ -220,6 +219,7 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
     }
     
     BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
+    // CCC, 11/1/2012. Enabled button even if dest dir is nil, but the button should prompt for save location in that case.
     [self.renameAndFileButton setEnabled:renameValid];
 
     [self.computedNameTextField setStringValue:computedName];
