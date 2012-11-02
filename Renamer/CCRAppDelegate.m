@@ -13,6 +13,8 @@
 
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
+static NSAttributedString *shortSeparator;
+static NSAttributedString *longSeparator;
 
 @interface CCRAppDelegate ()
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -24,6 +26,12 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
 @end
 
 @implementation CCRAppDelegate
+
++ (void)initialize;
+{
+    shortSeparator = [[NSAttributedString alloc] initWithString:@"-"];
+    longSeparator = [[NSAttributedString alloc] initWithString:@" - "];
+}
 
 #pragma mark -
 #pragma mark NSApplicationDelegate
@@ -207,22 +215,33 @@ static CGFloat MinimumControlsPaneWidth = 364.0;
     
     // CCC, 10/29/2012. Validate fields also:
     BOOL fieldsValid = YES;
-    NSString *computedName = @"—";
     if (self.enableControls) {
-        NSString *dateStamp;
+        NSMutableAttributedString *computedName = [[NSMutableAttributedString alloc] initWithString:@""];
+
+        // CCC, 11/1/2012. Break out helper methods for adding and validating the substrings.
+        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.yearTextField.stringValue]];
+        [computedName appendAttributedString:shortSeparator];
+        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.monthTextField.stringValue]];
+        
         if (self.includeDayCheckbox.state == NSOnState) {
-            dateStamp = [NSString stringWithFormat:@"%@-%@-%@", self.yearTextField.stringValue, self.monthTextField.stringValue, self.dayTextField.stringValue];
-        } else {
-            dateStamp = [NSString stringWithFormat:@"%@-%@", self.yearTextField.stringValue, self.monthTextField.stringValue];
+            [computedName appendAttributedString:shortSeparator];
+            [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.dayTextField.stringValue]];
         }
-        computedName = [NSString stringWithFormat:@"%@ - %@ - %@", dateStamp, self.tagComboBox.stringValue, self.titleComboBox.stringValue];
+        
+        [computedName appendAttributedString:longSeparator];
+        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.tagComboBox.stringValue]];
+        [computedName appendAttributedString:longSeparator];
+        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.titleComboBox.stringValue]];
+        
+        [self.computedNameTextField setAttributedStringValue:computedName];
+    } else {
+        [self.computedNameTextField setStringValue:@"—"];
     }
     
     BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
     // CCC, 11/1/2012. Enabled button even if dest dir is nil, but the button should prompt for save location in that case.
     [self.renameAndFileButton setEnabled:renameValid];
 
-    [self.computedNameTextField setStringValue:computedName];
 }
 
 @end
