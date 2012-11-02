@@ -209,6 +209,25 @@ static NSAttributedString *longSeparator;
     [self.controlsPaneContainerView setNeedsDisplay:YES];
 }
 
+- (BOOL)_validateAndAppendComboBoxValue:(NSComboBox *)comboBox attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString;
+{
+    NSString *boxValue = [comboBox.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSAttributedString *stringToAppend;
+    BOOL valid;
+    if ([boxValue length] == 0) {
+        // append error string
+        stringToAppend = [[NSAttributedString alloc] initWithString:errorString attributes:@{NSForegroundColorAttributeName:[NSColor redColor]}];
+        valid = NO;
+    } else {
+        boxValue = [boxValue lowercaseString];
+        stringToAppend = [[NSAttributedString alloc] initWithString:boxValue];
+        valid = YES;
+    }
+    
+    [string appendAttributedString:stringToAppend];
+    return valid;
+}
+
 - (void)_updateEnabledState;
 {
     self.enableControls = [self.sourceListTableView selectedRow] >= 0;
@@ -229,17 +248,17 @@ static NSAttributedString *longSeparator;
         }
         
         [computedName appendAttributedString:longSeparator];
-        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.tagComboBox.stringValue]];
+        fieldsValid = [self _validateAndAppendComboBoxValue:self.tagComboBox attributedString:computedName errorString:NSLocalizedString(@"missing tag", @"error message embedded in computed name")] && fieldsValid;
         [computedName appendAttributedString:longSeparator];
-        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.titleComboBox.stringValue]];
+        fieldsValid = [self _validateAndAppendComboBoxValue:self.titleComboBox attributedString:computedName errorString:NSLocalizedString(@"missing title", @"error message embedded in computed name")] && fieldsValid;
         
         [self.computedNameTextField setAttributedStringValue:computedName];
     } else {
         [self.computedNameTextField setStringValue:@"—"];
     }
     
-    BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
     // CCC, 11/1/2012. Enabled button even if dest dir is nil, but the button should prompt for save location in that case.
+    BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
     [self.renameAndFileButton setEnabled:renameValid];
 
 }
