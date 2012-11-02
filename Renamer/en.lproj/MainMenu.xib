@@ -1355,7 +1355,7 @@
 														<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
 													</object>
 												</object>
-												<object class="NSColor" key="NSTextColor" id="490843595">
+												<object class="NSColor" key="NSTextColor">
 													<int key="NSColorSpace">6</int>
 													<string key="NSCatalogName">System</string>
 													<string key="NSColorName">disabledControlTextColor</string>
@@ -1554,7 +1554,12 @@
 												<string key="NSCellIdentifier">_NS:1535</string>
 												<reference key="NSControlView" ref="1040087653"/>
 												<reference key="NSBackgroundColor" ref="700451933"/>
-												<reference key="NSTextColor" ref="490843595"/>
+												<object class="NSColor" key="NSTextColor" id="679540912">
+													<int key="NSColorSpace">6</int>
+													<string key="NSCatalogName">System</string>
+													<string key="NSColorName">textColor</string>
+													<reference key="NSColor" ref="688951807"/>
+												</object>
 											</object>
 											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 										</object>
@@ -1677,13 +1682,13 @@
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTextFieldCell" key="NSCell" id="510256358">
 												<int key="NSCellFlags">67108928</int>
-												<int key="NSCellFlags2">272631808</int>
+												<int key="NSCellFlags2">1346373632</int>
 												<string key="NSContents">Label</string>
 												<reference key="NSSupport" ref="882913974"/>
 												<string key="NSCellIdentifier">_NS:1535</string>
 												<reference key="NSControlView" ref="10516481"/>
 												<reference key="NSBackgroundColor" ref="700451933"/>
-												<reference key="NSTextColor" ref="490843595"/>
+												<reference key="NSTextColor" ref="679540912"/>
 											</object>
 											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 										</object>
@@ -1974,12 +1979,7 @@
 												<reference key="NSControlView" ref="462048583"/>
 												<bool key="NSDrawsBackground">YES</bool>
 												<reference key="NSBackgroundColor" ref="794908751"/>
-												<object class="NSColor" key="NSTextColor" id="679540912">
-													<int key="NSColorSpace">6</int>
-													<string key="NSCatalogName">System</string>
-													<string key="NSColorName">textColor</string>
-													<reference key="NSColor" ref="688951807"/>
-												</object>
+												<reference key="NSTextColor" ref="679540912"/>
 											</object>
 											<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 										</object>
@@ -6116,7 +6116,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">1332</int>
+			<int key="maxID">1334</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
