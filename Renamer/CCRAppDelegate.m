@@ -215,13 +215,28 @@ static NSAttributedString *longSeparator;
     [self.controlsPaneContainerView setNeedsDisplay:YES];
 }
 
+- (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString;
+{
+    NSInteger value = [textField integerValue];
+    NSAttributedString *stringToAppend;
+    BOOL valid;
+    if (value < minValue || value > maxValue) {
+        stringToAppend = [[NSAttributedString alloc] initWithString:errorString attributes:@{NSForegroundColorAttributeName:[NSColor redColor]}];
+        valid = NO;
+    } else {
+        stringToAppend = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%ld", value]];
+        valid = YES;
+    }
+    [string appendAttributedString:stringToAppend];
+    return valid;
+}
+
 - (BOOL)_validateAndAppendComboBoxValue:(NSComboBox *)comboBox attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString;
 {
     NSString *boxValue = [comboBox.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSAttributedString *stringToAppend;
     BOOL valid;
     if ([boxValue length] == 0) {
-        // append error string
         stringToAppend = [[NSAttributedString alloc] initWithString:errorString attributes:@{NSForegroundColorAttributeName:[NSColor redColor]}];
         valid = NO;
     } else {
@@ -238,19 +253,18 @@ static NSAttributedString *longSeparator;
 {
     self.enableControls = [self.sourceListTableView selectedRow] >= 0;
     
-    // CCC, 10/29/2012. Validate fields also:
     BOOL fieldsValid = YES;
     if (self.enableControls) {
         NSMutableAttributedString *computedName = [[NSMutableAttributedString alloc] initWithString:@""];
 
-        // CCC, 11/1/2012. Break out helper methods for adding and validating the substrings.
-        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.yearTextField.stringValue]];
+        fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.yearTextField minimum:1 maximum:9999 attributedString:computedName errorString:@"yyyy"] && fieldsValid;
         [computedName appendAttributedString:shortSeparator];
-        [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.monthTextField.stringValue]];
+        fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.monthTextField minimum:1 maximum:12 attributedString:computedName errorString:@"mm"] && fieldsValid;
         
         if (self.includeDayCheckbox.state == NSOnState) {
             [computedName appendAttributedString:shortSeparator];
-            [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:self.dayTextField.stringValue]];
+            // CCC, 11/1/2012. Calculate the number of days in the month.
+            fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.dayTextField minimum:1 maximum:31 attributedString:computedName errorString:@"dd"] && fieldsValid;
         }
         
         [computedName appendAttributedString:longSeparator];
