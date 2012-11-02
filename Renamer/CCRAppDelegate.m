@@ -118,6 +118,12 @@ static NSAttributedString *longSeparator;
 - (IBAction)renameAndFile:(id)sender;
 {
     NSLog(@"Rename all the things");
+    if (self.destinationDirectory != nil) {
+        // CCC, 11/1/2012. Prompt for save location.
+        return;
+    }
+
+    // CCC, 11/1/2012. just do it.
 }
 
 - (IBAction)open:(id)sender;
@@ -257,9 +263,7 @@ static NSAttributedString *longSeparator;
         [self.computedNameTextField setStringValue:@"—"];
     }
     
-    // CCC, 11/1/2012. Enabled button even if dest dir is nil, but the button should prompt for save location in that case.
-    BOOL renameValid = self.enableControls && self.destinationDirectory != nil && fieldsValid;
-    [self.renameAndFileButton setEnabled:renameValid];
+    [self.renameAndFileButton setEnabled:self.enableControls && fieldsValid];
 
 }
 
