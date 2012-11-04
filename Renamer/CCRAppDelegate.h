@@ -16,6 +16,7 @@
 @property (nonatomic) BOOL enableControls;
 @property (nonatomic, strong) NSURL *destinationDirectory;
 
+// main app window
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet CCRSourceList *sourceList;
 @property (weak) IBOutlet NSTableView *sourceListTableView;
@@ -32,11 +33,18 @@
 @property (weak) IBOutlet NSComboBox *tagComboBox;
 @property (weak) IBOutlet NSComboBox *titleComboBox;
 
-
 - (IBAction)renameAndFile:(id)sender;
 - (IBAction)open:(id)sender;
 - (IBAction)quicklook:(id)sender;
 - (IBAction)chooseDestination:(id)sender;
 - (IBAction)includeDayChanged:(id)sender;
+
+// replacement confirmation sheet
+@property (weak) IBOutlet NSWindow *replacementConfirmationSheet;
+@property (weak) IBOutlet NSTextField *title;
+@property (weak) IBOutlet NSTextField *message;
+
+- (IBAction)cancel:(id)sender;
+- (IBAction)replace:(id)sender;
 
 @end

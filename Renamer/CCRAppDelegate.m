@@ -17,6 +17,11 @@ static NSAttributedString *shortSeparator;
 static NSAttributedString *longSeparator;
 static NSAttributedString *extensionSeparator;
 
+enum {
+    CCRReplacementConfirmationCancel,
+    CCRReplacementConfirmationReplace,
+};
+
 @interface CCRAppDelegate ()
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 
@@ -120,6 +125,8 @@ static NSAttributedString *extensionSeparator;
 
 #pragma mark - Actions
 
+#pragma mark Main Window
+
 - (IBAction)renameAndFile:(id)sender;
 {
     if (self.destinationDirectory != nil) {
@@ -193,6 +200,18 @@ static NSAttributedString *extensionSeparator;
 {
     [self _updateEnabledState];
 }
+
+#pragma mark Replacement Confirmation Sheet
+
+// CCC, 11/3/2012. Rename these actions to include replacement confirmation in name.
+- (IBAction)cancel:(id)sender {
+    [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationCancel];
+}
+
+- (IBAction)replace:(id)sender {
+    [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationReplace];
+}
+
 
 #pragma mark - Private API
 
@@ -350,6 +369,30 @@ static NSAttributedString *extensionSeparator;
     [self.sourceListTableView reloadData];
 }
 
+- (void)_replacementConfirmationSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo;
+{
+    NSURL *destination = (NSURL *)CFBridgingRelease(contextInfo);
+    NSLog(@"received _replacementConfirmationSheetDidEnd with destination: %@ return code: %d", destination, returnCode);
+    [sheet orderOut:self];
+    if (returnCode == CCRReplacementConfirmationReplace)
+        [self _moveSelectionToURL:destination confirmingOverwrite:NO];
+}
+
+- (void)_configureReplacementConfirmationSheetForDestination:(NSURL *)destination;
+{
+    if (!self.replacementConfirmationSheet)
+        [NSBundle loadNibNamed:@"ReplacementConfirmation" owner:self];
+    NSAssert(self.replacementConfirmationSheet != nil, @"expected to have sheet window loaded");
+    
+    // CCC, 11/3/2012. Configuring using destination
+    self.title.stringValue = @"title";
+    self.message.stringValue = @"message";
+    //            NSString *title = [NSString stringWithFormat:@"title"];
+    //            NSString *messageFormatString = NSLocalizedString(@"A file or folder with the same name already exists in the folder. Replacing it will overwrite its current contents.", @"confirmation sheet message");
+    // CCC, 11/3/2012. Localize buttons. Probably need to use an actual nib based sheet here to get the buttons right.
+    //            NSBeginAlertSheet(title, @"Cancel", @"Replace", nil, self.window, self, @selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:), NULL, context, @"message");
+}
+
 - (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
 {
     NSURL *urlOfFIleToRename = [self _selectedFileURLOrNil];
@@ -369,9 +412,11 @@ static NSAttributedString *extensionSeparator;
     
     if ([destination checkResourceIsReachableAndReturnError:&error]) {
         if (confirming) {
-            // CCC, 11/3/2012. prompt and then early out if they cancel
-            NSLog(@"There's already something there. I should prompt to replace it");
-            return;
+            // CCC, 11/3/2012. prompt
+            CFTypeRef context = CFBridgingRetain(destination);
+            [self _configureReplacementConfirmationSheetForDestination:destination];
+            [NSApp beginSheet:self.replacementConfirmationSheet modalForWindow:self.window modalDelegate:self didEndSelector:@selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:(void *)context];
+            return; // We'll get called again with confirming == NO if they choose to replace.
         }
         // CCC, 11/3/2012. Remove destination item.
         NSLog(@"OK. They want to overwrite, so delete the item at the destination.");
@@ -381,6 +426,7 @@ static NSAttributedString *extensionSeparator;
     BOOL success = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
     if (!success) {
         // CCC, 11/3/2012. This is crappy, but better than nothing for now.
+        // CCC, 11/3/2012. Localize.
         NSBeginAlertSheet(@"Unable to Rename File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to rename the file: %@", error);
         return;
     }
