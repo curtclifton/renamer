@@ -414,9 +414,12 @@ enum {
             [NSApp beginSheet:self.replacementConfirmationSheet modalForWindow:self.window modalDelegate:self didEndSelector:@selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:(void *)context];
             return; // We'll get called again with confirming == NO if they choose to replace.
         }
-        // CCC, 11/3/2012. Remove destination item.
-        NSLog(@"OK. They want to overwrite, so delete the item at the destination.");
-        // [manager removeItemAtURL:destination error:&error];
+        if ( ! [manager removeItemAtURL:destination error:&error]) {
+            // CCC, 11/3/2012. This is crappy, but better than nothing for now.
+            // CCC, 11/3/2012. Localize.
+            NSBeginAlertSheet(@"Unable to Remove Existing File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to delete the existing file: %@", error);
+            return;
+        }
     }
     
     BOOL success = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
