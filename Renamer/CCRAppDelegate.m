@@ -372,7 +372,6 @@ enum {
 - (void)_replacementConfirmationSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo;
 {
     NSURL *destination = (NSURL *)CFBridgingRelease(contextInfo);
-    NSLog(@"received _replacementConfirmationSheetDidEnd with destination: %@ return code: %d", destination, returnCode);
     [sheet orderOut:self];
     if (returnCode == CCRReplacementConfirmationReplace)
         [self _moveSelectionToURL:destination confirmingOverwrite:NO];
@@ -384,13 +383,11 @@ enum {
         [NSBundle loadNibNamed:@"ReplacementConfirmation" owner:self];
     NSAssert(self.replacementConfirmationSheet != nil, @"expected to have sheet window loaded");
     
-    // CCC, 11/3/2012. Configuring using destination
-    self.title.stringValue = @"title";
-    self.message.stringValue = @"message";
-    //            NSString *title = [NSString stringWithFormat:@"title"];
-    //            NSString *messageFormatString = NSLocalizedString(@"A file or folder with the same name already exists in the folder. Replacing it will overwrite its current contents.", @"confirmation sheet message");
-    // CCC, 11/3/2012. Localize buttons. Probably need to use an actual nib based sheet here to get the buttons right.
-    //            NSBeginAlertSheet(title, @"Cancel", @"Replace", nil, self.window, self, @selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:), NULL, context, @"message");
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"“%@” already exists. Do you want to replace it?", @"replacement confirmation sheet"), [destination lastPathComponent]];
+    self.title.stringValue = title;
+    
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"A file or folder with the same name already exists in the folder %@. Replacing it will overwrite its current contents.", @"replacement confirmation sheet"), [[destination URLByDeletingLastPathComponent] lastPathComponent]];
+    self.message.stringValue = message;
 }
 
 - (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
@@ -412,7 +409,6 @@ enum {
     
     if ([destination checkResourceIsReachableAndReturnError:&error]) {
         if (confirming) {
-            // CCC, 11/3/2012. prompt
             CFTypeRef context = CFBridgingRetain(destination);
             [self _configureReplacementConfirmationSheetForDestination:destination];
             [NSApp beginSheet:self.replacementConfirmationSheet modalForWindow:self.window modalDelegate:self didEndSelector:@selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:(void *)context];
