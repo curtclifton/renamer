@@ -21,8 +21,11 @@ static NSAttributedString *longSeparator;
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (void)_addFilenamesToSourceList:(NSArray *)filenames;
+- (NSURL *)_selectedFileURLOrNil;
+
 - (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
+- (void)_moveSelectionToURL:(NSURL *)destination;
 @end
 
 @implementation CCRAppDelegate
@@ -119,11 +122,24 @@ static NSAttributedString *longSeparator;
 {
     NSLog(@"Rename all the things");
     if (self.destinationDirectory != nil) {
-        // CCC, 11/1/2012. Prompt for save location.
+        NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
+        [self _moveSelectionToURL:destination];
         return;
     }
 
-    // CCC, 11/1/2012. just do it.
+    // CCC, 11/3/2012. should you be calling setMessage: on every panel, open and save?
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    [savePanel setNameFieldLabel:NSLocalizedString(@"New name", @"label for name field in save panel")];
+    [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
+    // CCC, 11/3/2012. File extension handling?
+    [savePanel setPrompt:NSLocalizedString(@"Rename", @"label for button in save panel")];
+    
+    [savePanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+        if (result != NSFileHandlingPanelOKButton)
+            return;
+        
+        [self _moveSelectionToURL:[savePanel URL]];
+    }];
 }
 
 - (IBAction)open:(id)sender;
@@ -143,8 +159,9 @@ static NSAttributedString *longSeparator;
 
 - (IBAction)quicklook:(id)sender;
 {
+    // CCC, 11/3/2012. Implement.
     // Throw up a sheet with a QLPreviewView. See headers: no docs still.
-    NSLog(@"quicklook the thing: %@", [self.sourceList urlForRow:self.sourceListTableView.selectedRow]);
+    NSLog(@"quicklook the thing: %@", [self _selectedFileURLOrNil]);
 }
 
 - (IBAction)chooseDestination:(id)sender;
@@ -187,6 +204,13 @@ static NSAttributedString *longSeparator;
     }];
     
     [self _addURLsToSourceList:urls];
+}
+
+- (NSURL *)_selectedFileURLOrNil;
+{
+    if (self.sourceListTableView.selectedRow < 0)
+        return nil;
+    return [self.sourceList urlForRow:self.sourceListTableView.selectedRow];
 }
 
 - (void)_windowDidResize:(NSNotification *)notification;
@@ -271,7 +295,7 @@ static NSAttributedString *longSeparator;
 
 - (void)_updateEnabledState;
 {
-    self.enableControls = [self.sourceListTableView selectedRow] >= 0;
+    self.enableControls = [self _selectedFileURLOrNil] != nil;
     
     BOOL fieldsValid = YES;
     if (self.enableControls) {
@@ -293,6 +317,7 @@ static NSAttributedString *longSeparator;
         [computedName appendAttributedString:longSeparator];
         fieldsValid = [self _validateAndAppendComboBoxValue:self.titleComboBox attributedString:computedName errorString:NSLocalizedString(@"missing title", @"error message embedded in computed name")] && fieldsValid;
         
+        // CCC, 11/3/2012. Get extension from source and append to string.
         [self.computedNameTextField setAttributedStringValue:computedName];
     } else {
         [self.computedNameTextField setStringValue:@"—"];
@@ -302,4 +327,17 @@ static NSAttributedString *longSeparator;
 
 }
 
+- (void)_moveSelectionToURL:(NSURL *)destination;
+{
+    NSURL *urlOfFIleToRename = [self _selectedFileURLOrNil];
+    NSAssert(urlOfFIleToRename != nil, @"Must have a file to rename");
+    NSAssert(destination != nil, @"Must have a destination");
+    NSAssert(self.enableControls, @"Controls must be enabled");
+    // CCC, 11/3/2012. Assert that the extension is right on the destination.
+    
+    NSLog(@"Renaming %@ to %@ and storing in %@", urlOfFIleToRename, self.computedNameTextField.stringValue, destination);
+    // CCC, 11/3/2012. do it!
+    
+    // CCC, 11/3/2012. Remove item from source list.
+}
 @end
