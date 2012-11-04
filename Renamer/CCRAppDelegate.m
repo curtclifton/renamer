@@ -127,7 +127,6 @@ static NSAttributedString *longSeparator;
         return;
     }
 
-    // CCC, 11/3/2012. should you be calling setMessage: on every panel, open and save?
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     [savePanel setNameFieldLabel:NSLocalizedString(@"New name", @"label for name field in save panel")];
     [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
@@ -147,6 +146,7 @@ static NSAttributedString *longSeparator;
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     [openPanel setCanChooseDirectories:YES];
     [openPanel setAllowsMultipleSelection:YES];
+    [openPanel setMessage:NSLocalizedString(@"Choose files to be renamed.", @"Open sheet message")];
     
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result != NSFileHandlingPanelOKButton)
@@ -170,6 +170,11 @@ static NSAttributedString *longSeparator;
     [openPanel setCanChooseDirectories:YES];
     [openPanel setAllowsMultipleSelection:NO];
     [openPanel setCanChooseFiles:NO];
+    [openPanel setMessage:NSLocalizedString(@"Choose the destination directory for renamed files.", @"Open sheet message")];
+    [openPanel setPrompt:NSLocalizedString(@"Set Destination", @"Open sheet prompt")];
+    if (self.destinationDirectory)
+        [openPanel setDirectoryURL:self.destinationDirectory];
+
     
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result != NSFileHandlingPanelOKButton)
