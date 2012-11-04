@@ -362,6 +362,7 @@ static NSAttributedString *extensionSeparator;
 
     // CCC, 11/3/2012. Whenever we add or remove URLs from the list we should manage the selection.
     [self.sourceList removeURL:urlOfFIleToRename];
+    [self.titleComboBox setStringValue:@""]; // lesson chance of name collision
     [self.sourceListTableView reloadData];
 }
 @end
