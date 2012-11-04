@@ -15,6 +15,7 @@ static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
 static NSAttributedString *shortSeparator;
 static NSAttributedString *longSeparator;
+static NSAttributedString *extensionSeparator;
 
 @interface CCRAppDelegate ()
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -34,6 +35,7 @@ static NSAttributedString *longSeparator;
 {
     shortSeparator = [[NSAttributedString alloc] initWithString:@"-"];
     longSeparator = [[NSAttributedString alloc] initWithString:@" - "];
+    extensionSeparator = [[NSAttributedString alloc] initWithString:@"."];
 }
 
 #pragma mark -
@@ -120,7 +122,6 @@ static NSAttributedString *longSeparator;
 
 - (IBAction)renameAndFile:(id)sender;
 {
-    NSLog(@"Rename all the things");
     if (self.destinationDirectory != nil) {
         NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
         [self _moveSelectionToURL:destination];
@@ -294,13 +295,13 @@ static NSAttributedString *longSeparator;
     NSCalendar *calendar = [NSCalendar currentCalendar];
     
     NSRange range = [calendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:[calendar dateFromComponents:components]];
-    NSLog(@"range: %@", NSStringFromRange(range));
     return range.length;
 }
 
 - (void)_updateEnabledState;
 {
-    self.enableControls = [self _selectedFileURLOrNil] != nil;
+    NSURL *selectedFileURL = [self _selectedFileURLOrNil];
+    self.enableControls = selectedFileURL != nil;
     
     BOOL fieldsValid = YES;
     if (self.enableControls) {
@@ -322,7 +323,12 @@ static NSAttributedString *longSeparator;
         [computedName appendAttributedString:longSeparator];
         fieldsValid = [self _validateAndAppendComboBoxValue:self.titleComboBox attributedString:computedName errorString:NSLocalizedString(@"missing title", @"error message embedded in computed name")] && fieldsValid;
         
-        // CCC, 11/3/2012. Get extension from source and append to string.
+        NSString *fileExtension = [selectedFileURL pathExtension];
+        if (fileExtension && ! [fileExtension isEqualToString:@""]) {
+            [computedName appendAttributedString:extensionSeparator];
+            [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:fileExtension]];
+        }
+        
         [self.computedNameTextField setAttributedStringValue:computedName];
     } else {
         [self.computedNameTextField setStringValue:@"—"];
@@ -338,7 +344,7 @@ static NSAttributedString *longSeparator;
     NSAssert(urlOfFIleToRename != nil, @"Must have a file to rename");
     NSAssert(destination != nil, @"Must have a destination");
     NSAssert(self.enableControls, @"Controls must be enabled");
-    // CCC, 11/3/2012. Assert that the extension is right on the destination.
+    NSAssert([[urlOfFIleToRename pathExtension] isEqualToString:[destination pathExtension]], @"file extensions must match");
     
     NSLog(@"Renaming %@ to %@ and storing in %@", urlOfFIleToRename, self.computedNameTextField.stringValue, destination);
     // CCC, 11/3/2012. do it!
