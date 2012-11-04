@@ -12,6 +12,8 @@
 
 @interface CCRSourceList ()
 @property (nonatomic, strong) NSMutableArray *sourceURLs;
+
+- (void)_updateHasContent;
 @end
 
 @implementation CCRSourceList
@@ -91,11 +93,24 @@
     }];
     
     self.sourceURLs = [NSMutableArray arrayWithArray:sortedURLs];
-    self.hasContent = [self.sourceURLs count] > 0;
+    [self _updateHasContent];
+}
+
+- (void)removeURL:(NSURL *)url;
+{
+    [self.sourceURLs removeObject:url];
+    [self _updateHasContent];
 }
 
 - (NSURL *)urlForRow:(NSInteger)row;
 {
     return self.sourceURLs[row];
+}
+
+#pragma mark Private API
+
+- (void)_updateHasContent;
+{
+    self.hasContent = [self.sourceURLs count] > 0;
 }
 @end

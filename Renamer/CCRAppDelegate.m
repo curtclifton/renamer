@@ -350,9 +350,18 @@ static NSAttributedString *extensionSeparator;
     NSAssert(self.enableControls, @"Controls must be enabled");
     NSAssert([[urlOfFIleToRename pathExtension] isEqualToString:[destination pathExtension]], @"file extensions must match");
     
-    NSLog(@"Renaming %@ to %@ and storing in %@", urlOfFIleToRename, self.computedNameTextField.stringValue, destination);
-    // CCC, 11/3/2012. do it!
-    
-    // CCC, 11/3/2012. Remove item from source list.
+    // First attempt does this synchronously without any coordination. May need to use file coordination for this ultimately.
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    BOOL success = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
+    if (!success) {
+        // CCC, 11/3/2012. This is crappy, but better than nothing for now.
+        NSBeginAlertSheet(@"Unable to Rename File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to rename the file: %@", error);
+        return;
+    }
+
+    // CCC, 11/3/2012. Whenever we add or remove URLs from the list we should manage the selection.
+    [self.sourceList removeURL:urlOfFIleToRename];
+    [self.sourceListTableView reloadData];
 }
 @end

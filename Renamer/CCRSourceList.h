@@ -13,5 +13,6 @@
 @property (nonatomic) BOOL hasContent; // affects controls via bindings
 
 - (void)addURLs:(NSArray *)urls;
+- (void)removeURL:(NSURL *)url;
 - (NSURL *)urlForRow:(NSInteger)row;
 @end
