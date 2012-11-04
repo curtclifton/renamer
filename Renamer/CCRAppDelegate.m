@@ -129,9 +129,13 @@ static NSAttributedString *extensionSeparator;
     }
 
     NSSavePanel *savePanel = [NSSavePanel savePanel];
-    [savePanel setNameFieldLabel:NSLocalizedString(@"New name", @"label for name field in save panel")];
+    [savePanel setNameFieldLabel:NSLocalizedString(@"New Name:", @"label for name field in save panel")];
     [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
-    // CCC, 11/3/2012. File extension handling?
+    
+    [savePanel setExtensionHidden:NO];
+    NSString *pathExtension = [[self _selectedFileURLOrNil] pathExtension];
+    [savePanel setAllowedFileTypes:@[pathExtension]];
+    [savePanel setAllowsOtherFileTypes:NO];
     [savePanel setPrompt:NSLocalizedString(@"Rename", @"label for button in save panel")];
     
     [savePanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
