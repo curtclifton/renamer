@@ -26,7 +26,7 @@ static NSAttributedString *extensionSeparator;
 
 - (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
-- (void)_moveSelectionToURL:(NSURL *)destination;
+- (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
 @end
 
 @implementation CCRAppDelegate
@@ -124,7 +124,7 @@ static NSAttributedString *extensionSeparator;
 {
     if (self.destinationDirectory != nil) {
         NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
-        [self _moveSelectionToURL:destination];
+        [self _moveSelectionToURL:destination confirmingOverwrite:YES];
         return;
     }
 
@@ -142,7 +142,7 @@ static NSAttributedString *extensionSeparator;
         if (result != NSFileHandlingPanelOKButton)
             return;
         
-        [self _moveSelectionToURL:[savePanel URL]];
+        [self _moveSelectionToURL:[savePanel URL] confirmingOverwrite:NO];
     }];
 }
 
@@ -342,7 +342,15 @@ static NSAttributedString *extensionSeparator;
 
 }
 
-- (void)_moveSelectionToURL:(NSURL *)destination;
+- (void)_removeURLFromSourceList:(NSURL *)url;
+{
+    // CCC, 11/3/2012. Whenever we add or remove URLs from the list we should manage the selection.
+    [self.sourceList removeURL:url];
+    [self.titleComboBox setStringValue:@""]; // lessen chance of name collision
+    [self.sourceListTableView reloadData];
+}
+
+- (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
 {
     NSURL *urlOfFIleToRename = [self _selectedFileURLOrNil];
     NSAssert(urlOfFIleToRename != nil, @"Must have a file to rename");
@@ -350,9 +358,26 @@ static NSAttributedString *extensionSeparator;
     NSAssert(self.enableControls, @"Controls must be enabled");
     NSAssert([[urlOfFIleToRename pathExtension] isEqualToString:[destination pathExtension]], @"file extensions must match");
     
-    // First attempt does this synchronously without any coordination. May need to use file coordination for this ultimately.
+    if ([[urlOfFIleToRename absoluteString] isEqualToString:[destination absoluteString]]) {
+        [self _removeURLFromSourceList:urlOfFIleToRename];
+        return;
+    }
+    
+    // First attempt does this synchronously without any coordination. May need to use file coordination for this ultimately.    
     NSFileManager *manager = [NSFileManager defaultManager];
     NSError *error = nil;
+    
+    if ([destination checkResourceIsReachableAndReturnError:&error]) {
+        if (confirming) {
+            // CCC, 11/3/2012. prompt and then early out if they cancel
+            NSLog(@"There's already something there. I should prompt to replace it");
+            return;
+        }
+        // CCC, 11/3/2012. Remove destination item.
+        NSLog(@"OK. They want to overwrite, so delete the item at the destination.");
+        // [manager removeItemAtURL:destination error:&error];
+    }
+    
     BOOL success = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
     if (!success) {
         // CCC, 11/3/2012. This is crappy, but better than nothing for now.
@@ -360,9 +385,6 @@ static NSAttributedString *extensionSeparator;
         return;
     }
 
-    // CCC, 11/3/2012. Whenever we add or remove URLs from the list we should manage the selection.
-    [self.sourceList removeURL:urlOfFIleToRename];
-    [self.titleComboBox setStringValue:@""]; // lesson chance of name collision
-    [self.sourceListTableView reloadData];
+    [self _removeURLFromSourceList:urlOfFIleToRename];
 }
 @end
