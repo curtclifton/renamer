@@ -34,53 +34,36 @@
 
 #pragma mark - 
 #pragma mark NSComboBoxDataSource
-- (NSInteger)numberOfItemsInComboBox:(NSComboBox *)aComboBox;
+- (NSArray *)_sourceArrayForComboBox:(NSComboBox *)aComboBox;
 {
     if (aComboBox == self.tagComboBox) {
-        return self.tagsToArrayOfTitlesDictionary.count;
+        return [self _sortedTags];
     } else if (aComboBox == self.titleComboBox) {
         NSArray *titles = self.tagsToArrayOfTitlesDictionary[self.tagComboBox.stringValue];
-        if (titles == nil)
-            return 0;
-        else
-            return titles.count;
+        if (titles != nil)
+            return titles;
     }
+    
+    return [NSArray array];
+}
 
-    // During initial construction of the view hierarchy, we can get called before we have our combo box properties set, so…
-    return 0;
+- (NSInteger)numberOfItemsInComboBox:(NSComboBox *)aComboBox;
+{
+    return [self _sourceArrayForComboBox:aComboBox].count;
 }
 
 - (id)comboBox:(NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index;
 {
-    if (aComboBox == self.tagComboBox) {
-        return [self _sortedTags][index];
-    } else if (aComboBox == self.titleComboBox) {
-        NSArray *titles = self.tagsToArrayOfTitlesDictionary[self.tagComboBox.stringValue];
-        if (titles == nil)
-            return @"";
-        else
-            return titles[index];
-    }
-    
-    // During initial construction of the view hierarchy, we can get called before we have our combo box properties set, so…
+    NSArray *sourceArray = [self _sourceArrayForComboBox:aComboBox];
+    if (index >= 0 && index < sourceArray.count)
+        return sourceArray[index];
     return @"";
 }
 
 
 - (NSUInteger)comboBox:(NSComboBox *)aComboBox indexOfItemWithStringValue:(NSString *)string;
 {
-    if (aComboBox == self.tagComboBox) {
-        return [[self _sortedTags] indexOfObject:string];
-    } else if (aComboBox == self.titleComboBox) {
-        NSArray *titles = self.tagsToArrayOfTitlesDictionary[self.tagComboBox.stringValue];
-        if (titles == nil)
-            return NSNotFound;
-        else
-            return [titles indexOfObject:string];
-    }
-    
-    // During initial construction of the view hierarchy, we can get called before we have our combo box properties set, so…
-    return NSNotFound;
+    return [[self _sourceArrayForComboBox:aComboBox] indexOfObject:string];
 }
 
 //- (NSString *)comboBox:(NSComboBox *)aComboBox completedString:(NSString *)string;
