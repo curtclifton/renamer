@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
 
-@class CCRSourceList;
+@class CCRSourceList, CCRTagsAndTitlesController;
 
 @interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSSplitViewDelegate, NSTableViewDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>
 
@@ -24,6 +24,7 @@
 @property (weak) IBOutlet NSSplitView *splitView;
 @property (weak) IBOutlet NSView *sourceListContainerView;
 @property (weak) IBOutlet NSView *controlsPaneContainerView;
+@property (weak) IBOutlet CCRTagsAndTitlesController *tagsAndTItlesController;
 @property (weak) IBOutlet NSButton *renameAndFileButton;
 @property (weak) IBOutlet NSTextField *computedNameTextField;
 

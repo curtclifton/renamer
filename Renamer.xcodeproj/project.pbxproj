@@ -16,6 +16,7 @@
 		4D69CAB316461AFF006DCD21 /* ReplacementConfirmation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D69CAB216461AFF006DCD21 /* ReplacementConfirmation.xib */; };
 		4D69CAD3164767F9006DCD21 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D69CAD2164767F9006DCD21 /* Quartz.framework */; };
 		4D69CAD816476E2B006DCD21 /* CCRSourceListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D69CAD716476E2B006DCD21 /* CCRSourceListTableView.m */; };
+		4D69CAE5164777C1006DCD21 /* CCRTagsAndTitlesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */; };
 		4DEA4ECB1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEA4ECA1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m */; };
 		4DEA4ECF1640C78400D73F8B /* CCRNSURLValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEA4ECE1640C78400D73F8B /* CCRNSURLValueTransformer.m */; };
 		4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */; };
@@ -43,6 +44,8 @@
 		4D69CAD2164767F9006DCD21 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		4D69CAD616476E2B006DCD21 /* CCRSourceListTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRSourceListTableView.h; sourceTree = "<group>"; };
 		4D69CAD716476E2B006DCD21 /* CCRSourceListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRSourceListTableView.m; sourceTree = "<group>"; };
+		4D69CAE3164777C1006DCD21 /* CCRTagsAndTitlesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRTagsAndTitlesController.h; sourceTree = "<group>"; };
+		4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRTagsAndTitlesController.m; sourceTree = "<group>"; };
 		4DEA4EC91640C5A400D73F8B /* CCRLastPathComponentValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRLastPathComponentValueTransformer.h; sourceTree = "<group>"; };
 		4DEA4ECA1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRLastPathComponentValueTransformer.m; sourceTree = "<group>"; };
 		4DEA4ECD1640C78400D73F8B /* CCRNSURLValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRNSURLValueTransformer.h; sourceTree = "<group>"; };
@@ -108,23 +111,23 @@
 		4D4CB49816096C2800CD41B4 /* Renamer */ = {
 			isa = PBXGroup;
 			children = (
-				F7E58A20163DDE7200E25112 /* DividerBar.png */,
-				4D4CB4B31609742200CD41B4 /* Renamer.entitlements */,
 				4D4CB4A416096C2800CD41B4 /* CCRAppDelegate.h */,
 				4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */,
-				4D4CB4A716096C2800CD41B4 /* MainMenu.xib */,
-				4D4CB49916096C2800CD41B4 /* Supporting Files */,
-				4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */,
-				4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */,
-				4DF18CAC163E07040002D0F3 /* NSArray-CCRExtensions.h */,
-				4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */,
 				4DEA4EC91640C5A400D73F8B /* CCRLastPathComponentValueTransformer.h */,
 				4DEA4ECA1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m */,
 				4DEA4ECD1640C78400D73F8B /* CCRNSURLValueTransformer.h */,
 				4DEA4ECE1640C78400D73F8B /* CCRNSURLValueTransformer.m */,
-				4D69CAB216461AFF006DCD21 /* ReplacementConfirmation.xib */,
+				4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */,
+				4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */,
 				4D69CAD616476E2B006DCD21 /* CCRSourceListTableView.h */,
 				4D69CAD716476E2B006DCD21 /* CCRSourceListTableView.m */,
+				4D69CAE3164777C1006DCD21 /* CCRTagsAndTitlesController.h */,
+				4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */,
+				4DF18CAC163E07040002D0F3 /* NSArray-CCRExtensions.h */,
+				4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */,
+				4D4CB4B31609742200CD41B4 /* Renamer.entitlements */,
+				4D4CB49916096C2800CD41B4 /* Supporting Files */,
+				4D69CAE116477775006DCD21 /* UI */,
 			);
 			path = Renamer;
 			sourceTree = "<group>";
@@ -139,6 +142,16 @@
 				4D4CB4A116096C2800CD41B4 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4D69CAE116477775006DCD21 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				F7E58A20163DDE7200E25112 /* DividerBar.png */,
+				4D4CB4A716096C2800CD41B4 /* MainMenu.xib */,
+				4D69CAB216461AFF006DCD21 /* ReplacementConfirmation.xib */,
+			);
+			name = UI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,6 +228,7 @@
 				4DEA4ECB1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m in Sources */,
 				4DEA4ECF1640C78400D73F8B /* CCRNSURLValueTransformer.m in Sources */,
 				4D69CAD816476E2B006DCD21 /* CCRSourceListTableView.m in Sources */,
+				4D69CAE5164777C1006DCD21 /* CCRTagsAndTitlesController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

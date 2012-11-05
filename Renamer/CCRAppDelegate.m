@@ -9,6 +9,7 @@
 #import "CCRAppDelegate.h"
 
 #import "CCRSourceList.h"
+#import "CCRTagsAndTitlesController.h"
 #import "NSArray-CCRExtensions.h"
 
 static CGFloat MinimumSourceListWidth = 120.0;
@@ -278,8 +279,8 @@ enum {
         NSBeep();
         return;
     }
-    // CCC, 11/4/2012. Remove current item from source list
-    NSLog(@"remove it");
+
+    [self _removeURLFromSourceList:[self _selectedFileURLOrNil]];
 }
 
 #pragma mark - Private API
@@ -434,8 +435,13 @@ enum {
 {
     // CCC, 11/3/2012. Whenever we add or remove URLs from the list we should manage the selection.
     [self.sourceList removeURL:url];
-    [self.titleComboBox setStringValue:@""]; // lessen chance of name collision
     [self.sourceListTableView reloadData];
+}
+
+- (void)_renameCompletedForURL:(NSURL *)url;
+{
+    [self.tagsAndTItlesController clearFieldsAndRemember:YES];
+    [self _removeURLFromSourceList:url];
 }
 
 - (void)_replacementConfirmationSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo;
@@ -468,7 +474,7 @@ enum {
     NSAssert([[urlOfFIleToRename pathExtension] isEqualToString:[destination pathExtension]], @"file extensions must match");
     
     if ([[urlOfFIleToRename absoluteString] isEqualToString:[destination absoluteString]]) {
-        [self _removeURLFromSourceList:urlOfFIleToRename];
+        [self _renameCompletedForURL:urlOfFIleToRename];
         return;
     }
     
@@ -499,6 +505,6 @@ enum {
         return;
     }
 
-    [self _removeURLFromSourceList:urlOfFIleToRename];
+    [self _renameCompletedForURL:urlOfFIleToRename];
 }
 @end
