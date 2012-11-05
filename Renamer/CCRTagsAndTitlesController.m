@@ -67,14 +67,22 @@
 }
 
 
-//- (NSUInteger)comboBox:(NSComboBox *)aComboBox indexOfItemWithStringValue:(NSString *)string;
-//{
-//    // CCC, 11/4/2012. Implement.
-//    if ([string isEqualToString:@"zero"])
-//        return 0;
-//    return NSNotFound;
-//}
-//
+- (NSUInteger)comboBox:(NSComboBox *)aComboBox indexOfItemWithStringValue:(NSString *)string;
+{
+    if (aComboBox == self.tagComboBox) {
+        return [[self _sortedTags] indexOfObject:string];
+    } else if (aComboBox == self.titleComboBox) {
+        NSArray *titles = self.tagsToArrayOfTitlesDictionary[self.tagComboBox.stringValue];
+        if (titles == nil)
+            return NSNotFound;
+        else
+            return [titles indexOfObject:string];
+    }
+    
+    // During initial construction of the view hierarchy, we can get called before we have our combo box properties set, so…
+    return NSNotFound;
+}
+
 //- (NSString *)comboBox:(NSComboBox *)aComboBox completedString:(NSString *)string;
 //{
 //    // CCC, 11/4/2012. Implement.
