@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CCRTagsAndTitlesController : NSObject <NSComboBoxDataSource, NSComboBoxDelegate>
+@interface CCRTagsAndTitlesController : NSObject <NSComboBoxDataSource>
 
 @property (weak) IBOutlet NSComboBox *tagComboBox;
 @property (weak) IBOutlet NSComboBox *titleComboBox;

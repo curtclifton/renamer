@@ -85,20 +85,6 @@
     return sourceArray[matchingIndex];
 }
 
-#pragma mark NSComboBoxDelegate
-- (void)comboBoxSelectionDidChange:(NSNotification *)notification;
-{
-    // CCC, 11/4/2012. Is this sufficient to detect when the tag changes so that we can refresh the title?
-    NSLog(@"selection did change");
-}
-
-#pragma mark NSControl delegate
-- (void)controlTextDidChange:(NSNotification *)aNotification;
-{
-    // CCC, 11/4/2012. May need to update the title combo box if the notification's object is the tag combo box.
-    [[NSApp delegate] controlTextDidChange:aNotification];
-}
-
 #pragma mark - Public API
 
 - (void)clearFieldsAndRemember:(BOOL)remember;

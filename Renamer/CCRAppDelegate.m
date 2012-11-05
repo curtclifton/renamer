@@ -100,6 +100,14 @@ enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+
+#pragma mark NSComboBoxDelegate
+- (void)comboBoxWillDismiss:(NSNotification *)notification;
+{
+    // stringValue of the combo box isn't set when any of the delegate notifications fire, so turn the run loop once before updating the display:
+    [self performSelector:@selector(_updateEnabledState) withObject:nil afterDelay:0];
+}
+
 #pragma mark NSSplitViewDelegate
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex;
 {

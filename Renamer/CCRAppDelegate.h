@@ -11,7 +11,7 @@
 
 @class CCRSourceList, CCRTagsAndTitlesController;
 
-@interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSSplitViewDelegate, NSTableViewDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>
+@interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSComboBoxDelegate, NSSplitViewDelegate, NSTableViewDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>
 
 // bindings
 @property (nonatomic) BOOL enableControls;
