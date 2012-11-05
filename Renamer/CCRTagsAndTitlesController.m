@@ -89,8 +89,8 @@
 
 - (void)clearFieldsAndRemember:(BOOL)remember;
 {
-    // CCC, 11/4/2012. Clear tag also? Perhaps not. Seems like multiple in a row with the same tag are likely.
-    // CCC, 11/4/2012. Remember.
+    // CCC, 11/4/2012. Remember the values.
+    // CCC, 11/4/2012. Probably want to set a maximum number of items to remember? That might require a cache policy. Hrmm.
     self.titleComboBox.stringValue = @"";
 }
 
