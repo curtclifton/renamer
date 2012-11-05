@@ -66,11 +66,24 @@
     return [[self _sourceArrayForComboBox:aComboBox] indexOfObject:string];
 }
 
-//- (NSString *)comboBox:(NSComboBox *)aComboBox completedString:(NSString *)string;
-//{
-//    // CCC, 11/4/2012. Implement.
-//    return string;
-//}
+- (NSString *)comboBox:(NSComboBox *)aComboBox completedString:(NSString *)string;
+{
+    NSArray *sourceArray = [self _sourceArrayForComboBox:aComboBox];
+
+    NSUInteger matchingIndex = [sourceArray indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        NSString *object = obj;
+        if ([object hasPrefix:string]) {
+            *stop = YES;
+            return YES;
+        }
+        return NO;
+    }];
+    
+    if (matchingIndex == NSNotFound)
+        return string;
+
+    return sourceArray[matchingIndex];
+}
 
 #pragma mark NSComboBoxDelegate
 - (void)comboBoxSelectionDidChange:(NSNotification *)notification;
