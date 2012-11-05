@@ -23,6 +23,8 @@ enum {
 };
 
 @interface CCRAppDelegate ()
+@property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
+
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
@@ -123,6 +125,48 @@ enum {
     return [[self.sourceList urlForRow:row] path];
 }
 
+#pragma mark - Quick Look support
+#pragma mark QLPreviewPanelController
+- (BOOL)acceptsPreviewPanelControl:(QLPreviewPanel *)panel;
+{
+    return YES;
+}
+
+- (void)beginPreviewPanelControl:(QLPreviewPanel *)panel;
+{
+    self.quickLookPreviewPanel = panel;
+    panel.delegate = self;
+    panel.dataSource = self;
+}
+
+- (void)endPreviewPanelControl:(QLPreviewPanel *)panel;
+{
+    panel.delegate = nil;
+    panel.dataSource = nil;
+    self.quickLookPreviewPanel = nil;
+}
+
+#pragma mark QLPreviewPanelDataSource
+
+- (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel;
+{
+    // CCC, 11/4/2012. May eventually want to use the source list for this so you can page through the items?
+    if ([self _selectedFileURLOrNil] == nil)
+        return 0;
+    return 1;
+}
+
+- (id <QLPreviewItem>)previewPanel:(QLPreviewPanel *)panel previewItemAtIndex:(NSInteger)index;
+{
+    NSAssert(panel == self.quickLookPreviewPanel, @"expected our panel: %@, got: %@", self.quickLookPreviewPanel, panel);
+    NSAssert(index == 0, @"we currently only vend a single preview, but were asked for preview %ld", index);
+    
+    return [self _selectedFileURLOrNil];
+}
+
+#pragma mark QLPreviewPanelDelegate
+// CCC, 11/4/2012. Implement.
+
 #pragma mark - Actions
 
 #pragma mark Main Window
@@ -174,6 +218,7 @@ enum {
     // CCC, 11/3/2012. Implement.
     // Throw up a sheet with a QLPreviewView. See headers: no docs still.
     NSLog(@"quicklook the thing: %@", [self _selectedFileURLOrNil]);
+    [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
 }
 
 - (IBAction)chooseDestination:(id)sender;
@@ -211,7 +256,6 @@ enum {
 - (IBAction)replace:(id)sender {
     [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationReplace];
 }
-
 
 #pragma mark - Private API
 

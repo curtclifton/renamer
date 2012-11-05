@@ -14,6 +14,7 @@
 		4D4CB4A616096C2800CD41B4 /* CCRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */; };
 		4D4CB4A916096C2800CD41B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A716096C2800CD41B4 /* MainMenu.xib */; };
 		4D69CAB316461AFF006DCD21 /* ReplacementConfirmation.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D69CAB216461AFF006DCD21 /* ReplacementConfirmation.xib */; };
+		4D69CAD3164767F9006DCD21 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D69CAD2164767F9006DCD21 /* Quartz.framework */; };
 		4DEA4ECB1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEA4ECA1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m */; };
 		4DEA4ECF1640C78400D73F8B /* CCRNSURLValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEA4ECE1640C78400D73F8B /* CCRNSURLValueTransformer.m */; };
 		4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */; };
@@ -38,6 +39,7 @@
 		4D4CB4A816096C2800CD41B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4D4CB4B31609742200CD41B4 /* Renamer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Renamer.entitlements; sourceTree = "<group>"; };
 		4D69CAB216461AFF006DCD21 /* ReplacementConfirmation.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReplacementConfirmation.xib; sourceTree = "<group>"; };
+		4D69CAD2164767F9006DCD21 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		4DEA4EC91640C5A400D73F8B /* CCRLastPathComponentValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRLastPathComponentValueTransformer.h; sourceTree = "<group>"; };
 		4DEA4ECA1640C5A400D73F8B /* CCRLastPathComponentValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRLastPathComponentValueTransformer.m; sourceTree = "<group>"; };
 		4DEA4ECD1640C78400D73F8B /* CCRNSURLValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRNSURLValueTransformer.h; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D69CAD3164767F9006DCD21 /* Quartz.framework in Frameworks */,
 				4DF18CAD163E095B0002D0F3 /* Foundation.framework in Frameworks */,
 				4D4CB49316096C2800CD41B4 /* Cocoa.framework in Frameworks */,
 			);
@@ -65,6 +68,7 @@
 		4D4CB48316096C2800CD41B4 = {
 			isa = PBXGroup;
 			children = (
+				4D69CAD2164767F9006DCD21 /* Quartz.framework */,
 				4D4CB49816096C2800CD41B4 /* Renamer */,
 				4D4CB49116096C2800CD41B4 /* Frameworks */,
 				4D4CB48F16096C2800CD41B4 /* Products */,
