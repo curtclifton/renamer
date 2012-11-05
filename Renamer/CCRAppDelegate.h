@@ -48,4 +48,8 @@
 - (IBAction)cancel:(id)sender;
 - (IBAction)replace:(id)sender;
 
+// other API
+- (void)quickLookSelection;
+- (void)removeSelectedItem;
+
 @end

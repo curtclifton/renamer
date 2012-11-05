@@ -150,7 +150,7 @@ enum {
 
 - (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel;
 {
-    // CCC, 11/4/2012. May eventually want to use the source list for this so you can page through the items?
+    // CCC, 11/4/2012. May eventually want to use the source list as the data source for this so you can page through the items?
     if ([self _selectedFileURLOrNil] == nil)
         return 0;
     return 1;
@@ -215,10 +215,7 @@ enum {
 
 - (IBAction)quicklook:(id)sender;
 {
-    // CCC, 11/3/2012. Implement.
-    // Throw up a sheet with a QLPreviewView. See headers: no docs still.
-    NSLog(@"quicklook the thing: %@", [self _selectedFileURLOrNil]);
-    [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
+    [self quickLookSelection];
 }
 
 - (IBAction)chooseDestination:(id)sender;
@@ -255,6 +252,26 @@ enum {
 
 - (IBAction)replace:(id)sender {
     [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationReplace];
+}
+
+#pragma mark Other Public API
+- (void)quickLookSelection;
+{
+    if ([self _selectedFileURLOrNil] == nil) {
+        NSBeep();
+        return;
+    }
+    [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
+}
+
+- (void)removeSelectedItem;
+{
+    if ([self _selectedFileURLOrNil] == nil) {
+        NSBeep();
+        return;
+    }
+    // CCC, 11/4/2012. Remove current item from source list
+    NSLog(@"remove it");
 }
 
 #pragma mark - Private API
