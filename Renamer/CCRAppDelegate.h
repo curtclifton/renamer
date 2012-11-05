@@ -25,6 +25,7 @@
 @property (weak) IBOutlet NSView *controlsPaneContainerView;
 @property (weak) IBOutlet NSButton *renameAndFileButton;
 @property (weak) IBOutlet NSTextField *computedNameTextField;
+@property (weak) IBOutlet NSButton *quicklookButton;
 
 @property (weak) IBOutlet NSTextField *yearTextField;
 @property (weak) IBOutlet NSTextField *monthTextField;

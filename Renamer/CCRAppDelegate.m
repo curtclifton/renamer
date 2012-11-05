@@ -8,6 +8,7 @@
 
 #import "CCRAppDelegate.h"
 
+#import "CCRQuickLookViewController.h"
 #import "CCRSourceList.h"
 #import "NSArray-CCRExtensions.h"
 
@@ -171,9 +172,21 @@ enum {
 
 - (IBAction)quicklook:(id)sender;
 {
-    // CCC, 11/3/2012. Implement.
-    // Throw up a sheet with a QLPreviewView. See headers: no docs still.
-    NSLog(@"quicklook the thing: %@", [self _selectedFileURLOrNil]);
+    NSAssert(sender != nil, @"expect a sender as we'll use its bounds");
+    NSAssert([sender isKindOfClass:[NSView class]], @"expected sender to be a view");
+
+    NSURL *selectedFileURL = [self _selectedFileURLOrNil];
+    NSAssert(selectedFileURL != nil, @"must have an item selected to quicklook it");
+
+    if (selectedFileURL == nil) {
+        NSBeep();
+        return;
+    }
+    
+    CCRQuickLookViewController *viewController = [[CCRQuickLookViewController alloc] initWithURL:selectedFileURL];
+    NSPopover *popover = [[NSPopover alloc] init];
+    viewController.popover = popover;
+    [popover showRelativeToRect:[sender bounds] ofView:sender preferredEdge:NSMinYEdge];
 }
 
 - (IBAction)chooseDestination:(id)sender;
