@@ -165,7 +165,15 @@ enum {
 }
 
 #pragma mark QLPreviewPanelDelegate
-// CCC, 11/4/2012. Implement.
+- (NSRect)previewPanel:(QLPreviewPanel *)panel sourceFrameOnScreenForPreviewItem:(id <QLPreviewItem>)item;
+{
+    NSAssert(panel == self.quickLookPreviewPanel, @"expected our panel: %@, got: %@", self.quickLookPreviewPanel, panel);
+    NSAssert(item == [self _selectedFileURLOrNil], @"expected our selection: %@, got item: %@", [self _selectedFileURLOrNil], item);
+
+    NSRect selectionRect = [self.sourceListTableView rectOfRow:self.sourceListTableView.selectedRow];
+    selectionRect = [self.sourceListTableView convertRect:selectionRect toView:nil];
+    return [self.window convertRectToScreen:selectionRect];
+}
 
 #pragma mark - Actions
 
