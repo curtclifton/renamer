@@ -105,8 +105,7 @@
 {
     if (_tagsToArrayOfTitlesDictionary == nil) {
         NSDictionary *tagsAndTitlesDictionary = [[NSUserDefaults standardUserDefaults] objectForKey:CCRTagsAndTitlesDictionaryPreferenceKey];
-        NSLog(@"Dictionary: %@", tagsAndTitlesDictionary);
-        if (tagsAndTitlesDictionary == nil) {
+g        if (tagsAndTitlesDictionary == nil) {
             _tagsToArrayOfTitlesDictionary = [NSMutableDictionary dictionary];
         } else {
             _tagsToArrayOfTitlesDictionary = [NSMutableDictionary dictionaryWithDictionary:tagsAndTitlesDictionary];

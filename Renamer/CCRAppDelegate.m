@@ -74,10 +74,10 @@ enum {
 }
 
 // CCC, 10/28/2012. Use restorable state stuff to squirrel away security scoped bookmarks for the source list URLs. See also NSWindowRestoration.h.
-/*
  
  - (void)application:(NSApplication *)app willEncodeRestorableState:(NSCoder *)coder;
  {
+     NSLog(@"In %@", NSStringFromSelector(_cmd));
  //    NSArray *bookmarks = [urls arrayByMappingBlock:^id(id object) {
  //        NSError *error;
  //        NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
@@ -92,8 +92,8 @@ enum {
  
 - (void)application:(NSApplication *)app didDecodeRestorableState:(NSCoder *)coder;
  {
+     NSLog(@"In %@", NSStringFromSelector(_cmd));
  }
- */
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification;
 {
@@ -297,7 +297,6 @@ enum {
     if (!self.replacementConfirmationSheet) {
         [NSBundle loadNibNamed:@"ReplacementConfirmation" owner:self];
         NSView *sheetContentView = self.replacementConfirmationSheet.contentView;
-        NSLog(@"sheetContentView constraints: %@", sheetContentView.constraints);
         NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:sheetContentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.replaceButton attribute:NSLayoutAttributeBottom multiplier:1 constant:20];
         heightConstraint.priority = NSLayoutPriorityDefaultHigh;
         [sheetContentView addConstraint:heightConstraint];
