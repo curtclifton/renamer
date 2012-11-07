@@ -278,11 +278,11 @@ enum {
 #pragma mark Replacement Confirmation Sheet
 
 // CCC, 11/3/2012. Rename these actions to include replacement confirmation in name.
-- (IBAction)cancel:(id)sender {
+- (IBAction)cancelReplacementConfirmation:(id)sender {
     [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationCancel];
 }
 
-- (IBAction)replace:(id)sender {
+- (IBAction)replaceReplacementConfirmation:(id)sender {
     [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationReplace];
 }
 

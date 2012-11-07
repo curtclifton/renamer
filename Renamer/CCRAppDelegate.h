@@ -52,8 +52,8 @@ extern NSString *CCRTagsAndTitlesDictionaryPreferenceKey;
 @property (weak) IBOutlet NSTextField *message;
 @property (weak) IBOutlet NSButton *replaceButton;
 
-- (IBAction)cancel:(id)sender;
-- (IBAction)replace:(id)sender;
+- (IBAction)cancelReplacementConfirmation:(id)sender;
+- (IBAction)replaceReplacementConfirmation:(id)sender;
 
 // other API
 - (void)quickLookSelection;
