@@ -276,7 +276,6 @@ enum {
 
 #pragma mark Replacement Confirmation Sheet
 
-// CCC, 11/3/2012. Rename these actions to include replacement confirmation in name.
 - (IBAction)cancelReplacementConfirmation:(id)sender {
     [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationCancel];
 }
@@ -363,7 +362,11 @@ enum {
     }
     
     if (selectedItemURL != nil) {
-        // CCC, 11/6/2012. Re-select the originally selected item
+        NSUInteger newSelectionIndex = [self.sourceList rowIndexForURL:selectedItemURL];
+        if (newSelectionIndex != NSNotFound) {
+            NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:newSelectionIndex];
+            [self.sourceListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+        }
     }
 }
 

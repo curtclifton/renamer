@@ -105,6 +105,11 @@
     return self.sourceURLs[row];
 }
 
+- (NSUInteger)rowIndexForURL:(NSURL *)url;
+{
+    return [self.sourceURLs indexOfObject:url];
+}
+
 #pragma mark Private API
 
 - (void)_updateHasContent;
