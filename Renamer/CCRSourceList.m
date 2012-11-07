@@ -10,6 +10,8 @@
 
 #import "NSArray-CCRExtensions.h"
 
+#import "CCRAppDelegate.h"
+
 @interface CCRSourceList ()
 @property (nonatomic, strong) NSMutableArray *sourceURLs;
 
@@ -64,12 +66,8 @@
 {
     NSPasteboard *draggingPasteboard = [info draggingPasteboard];
     if ([[draggingPasteboard types] containsObject:NSFilenamesPboardType]) {
-        NSArray *files = [draggingPasteboard propertyListForType:NSFilenamesPboardType];
-        NSArray *urls = [files arrayByMappingBlock:^id(id object) {
-            return [NSURL fileURLWithPath:object];
-        }];
-        [self addURLs:urls];
-        [tableView reloadData];
+        NSArray *paths = [draggingPasteboard propertyListForType:NSFilenamesPboardType];
+        [[NSApp delegate] addPathsToSourceList:paths];
     }
     
     return YES;

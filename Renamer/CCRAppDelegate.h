@@ -57,6 +57,7 @@ extern NSString *CCRTagsAndTitlesDictionaryPreferenceKey;
 
 // other API
 - (void)quickLookSelection;
+- (void)addPathsToSourceList:(NSArray *)filenames;
 - (void)removeSelectedItem;
 
 @end

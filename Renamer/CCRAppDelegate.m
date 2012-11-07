@@ -31,7 +31,6 @@ enum {
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
-- (void)_addFilenamesToSourceList:(NSArray *)filenames;
 - (NSURL *)_selectedFileURLOrNil;
 
 - (void)_windowDidResize:(NSNotification *)notification;
@@ -60,13 +59,13 @@ enum {
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
 {
     NSArray *filenames = [NSArray arrayWithObject:filename];
-    [self _addFilenamesToSourceList:filenames];
+    [self addPathsToSourceList:filenames];
     return YES;
 }
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
 {
-    [self _addFilenamesToSourceList:filenames];
+    [self addPathsToSourceList:filenames];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender;
@@ -323,6 +322,15 @@ enum {
     [[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFront:nil];
 }
 
+- (void)addPathsToSourceList:(NSArray *)filenames;
+{
+    NSArray *urls = [filenames arrayByMappingBlock:^id(id object) {
+        return [NSURL fileURLWithPath:object];
+    }];
+    
+    [self _addURLsToSourceList:urls];
+}
+
 - (void)removeSelectedItem;
 {
     if ([self _selectedFileURLOrNil] == nil) {
@@ -344,15 +352,6 @@ enum {
 {
     [self.sourceList addURLs:urls];
     [self.sourceListTableView reloadData];
-}
-
-- (void)_addFilenamesToSourceList:(NSArray *)filenames;
-{
-    NSArray *urls = [filenames arrayByMappingBlock:^id(id object) {
-        return [NSURL fileURLWithPath:object];
-    }];
-    
-    [self _addURLsToSourceList:urls];
 }
 
 - (NSURL *)_selectedFileURLOrNil;
