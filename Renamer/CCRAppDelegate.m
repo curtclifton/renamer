@@ -338,15 +338,7 @@ enum {
         return;
     }
 
-    NSInteger selectedItemIndex = self.sourceListTableView.selectedRow;
     [self _removeURLFromSourceList:[self _selectedFileURLOrNil]];
-    if (selectedItemIndex < self.sourceListTableView.numberOfRows) {
-        NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:selectedItemIndex];
-        [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
-    } else if (selectedItemIndex == self.sourceListTableView.numberOfRows) {
-        NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:self.sourceListTableView.numberOfRows - 1];
-        [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
-    }
 }
 
 #pragma mark - Private API
@@ -358,6 +350,7 @@ enum {
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
 {
+    // CCC, 11/3/2012. Whenever we add URLs from the list we should manage the selection.
     [self.sourceList addURLs:urls];
     [self.sourceListTableView reloadData];
 }
@@ -489,9 +482,18 @@ enum {
 
 - (void)_removeURLFromSourceList:(NSURL *)url;
 {
-    // CCC, 11/3/2012. Whenever we add or remove URLs from the list we should manage the selection.
+    NSInteger selectedItemIndex = self.sourceListTableView.selectedRow;
+
     [self.sourceList removeURL:url];
     [self.sourceListTableView reloadData];
+    
+    if (selectedItemIndex < self.sourceListTableView.numberOfRows) {
+        NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:selectedItemIndex];
+        [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
+    } else if (selectedItemIndex == self.sourceListTableView.numberOfRows) {
+        NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:self.sourceListTableView.numberOfRows - 1];
+        [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
+    }
 }
 
 - (void)_renameCompletedForURL:(NSURL *)url;
