@@ -13,6 +13,9 @@
 
 @interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSComboBoxDelegate, NSSplitViewDelegate, NSTableViewDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>
 
+// class methods
++ (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
+
 // bindings
 @property (nonatomic) BOOL enableControls;
 @property (nonatomic, strong) NSURL *destinationDirectory;

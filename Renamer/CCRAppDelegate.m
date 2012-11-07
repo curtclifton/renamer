@@ -46,6 +46,12 @@ enum {
     extensionSeparator = [[NSAttributedString alloc] initWithString:@"."];
 }
 
++ (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
+{
+    NSString *result = [[tagOrTitleString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] lowercaseString];
+    return result;
+}
+
 #pragma mark -
 #pragma mark NSApplicationDelegate
 
@@ -395,14 +401,13 @@ enum {
 
 - (BOOL)_validateAndAppendComboBoxValue:(NSComboBox *)comboBox attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString;
 {
-    NSString *boxValue = [comboBox.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *boxValue = [CCRAppDelegate stringBySanitizingString:comboBox.stringValue];
     NSAttributedString *stringToAppend;
     BOOL valid;
     if ([boxValue length] == 0) {
         stringToAppend = [[NSAttributedString alloc] initWithString:errorString attributes:@{NSForegroundColorAttributeName:[NSColor redColor]}];
         valid = NO;
     } else {
-        boxValue = [boxValue lowercaseString];
         stringToAppend = [[NSAttributedString alloc] initWithString:boxValue];
         valid = YES;
     }

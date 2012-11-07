@@ -8,9 +8,12 @@
 
 #import "CCRTagsAndTitlesController.h"
 
+#import "CCRAppDelegate.h"
+
 @interface CCRTagsAndTitlesController ()
 @property (nonatomic, strong) NSMutableDictionary *tagsToArrayOfTitlesDictionary;
 
+- (NSArray *)arrayBySortingArray:(NSArray *)array;
 - (NSArray *)_sortedTags;
 @end
 
@@ -18,7 +21,7 @@
 
 + (NSDictionary *)_dictionaryForTesting;
 {
-    return @{@"regence" : @[@"privacy statement", @"explanation of benefits", @"expense ratio letter"], @"omni" : @[@"reimbursement", @"employment offer"], @"planet bike" : @[]};
+    return @{@"regence" : @[@"expense ratio letter", @"explanation of benefits", @"privacy statement"], @"omni" : @[@"employment offer", @"reimbursement"], @"planet bike" : @[]};
 }
 
 - (id)init;
@@ -89,15 +92,28 @@
 
 - (void)clearFieldsAndRemember:(BOOL)remember;
 {
-    // CCC, 11/4/2012. Remember the values.
-    // CCC, 11/4/2012. Probably want to set a maximum number of items to remember? That might require a cache policy. Hrmm.
+    NSString *tag = [CCRAppDelegate stringBySanitizingString:self.tagComboBox.stringValue];
+    NSString *title = [CCRAppDelegate stringBySanitizingString:self.titleComboBox.stringValue];
+    NSArray *currentTitles = self.tagsToArrayOfTitlesDictionary[tag];
+    if (currentTitles == nil) {
+        currentTitles = [NSArray arrayWithObject:title];
+    } else {
+        if ( ! [currentTitles containsObject:title])
+            currentTitles = [self arrayBySortingArray:[currentTitles arrayByAddingObject:title]];
+    }
+    self.tagsToArrayOfTitlesDictionary[tag] = currentTitles;
     self.titleComboBox.stringValue = @"";
 }
 
 #pragma mark - Private API
+- (NSArray *)arrayBySortingArray:(NSArray *)array;
+{
+    return [array sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+}
+
 - (NSArray *)_sortedTags;
 {
-    return [[self.tagsToArrayOfTitlesDictionary allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    return [self arrayBySortingArray:[self.tagsToArrayOfTitlesDictionary allKeys]];
 }
 
 @end
