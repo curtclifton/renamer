@@ -45,6 +45,7 @@
 @property (weak) IBOutlet NSWindow *replacementConfirmationSheet;
 @property (weak) IBOutlet NSTextField *title;
 @property (weak) IBOutlet NSTextField *message;
+@property (weak) IBOutlet NSButton *replaceButton;
 
 - (IBAction)cancel:(id)sender;
 - (IBAction)replace:(id)sender;

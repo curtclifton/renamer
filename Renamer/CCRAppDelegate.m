@@ -271,6 +271,33 @@ enum {
     [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationReplace];
 }
 
+- (void)_replacementConfirmationSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo;
+{
+    NSURL *destination = (NSURL *)CFBridgingRelease(contextInfo);
+    [sheet orderOut:self];
+    if (returnCode == CCRReplacementConfirmationReplace)
+        [self _moveSelectionToURL:destination confirmingOverwrite:NO];
+}
+
+- (void)_configureReplacementConfirmationSheetForDestination:(NSURL *)destination;
+{
+    if (!self.replacementConfirmationSheet) {
+        [NSBundle loadNibNamed:@"ReplacementConfirmation" owner:self];
+        NSView *sheetContentView = self.replacementConfirmationSheet.contentView;
+        NSLog(@"sheetContentView constraints: %@", sheetContentView.constraints);
+        NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:sheetContentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.replaceButton attribute:NSLayoutAttributeBottom multiplier:1 constant:20];
+        heightConstraint.priority = NSLayoutPriorityDefaultHigh;
+        [sheetContentView addConstraint:heightConstraint];
+    }
+    NSAssert(self.replacementConfirmationSheet != nil, @"expected to have sheet window loaded");
+    
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"“%@” already exists. Do you want to replace it?", @"replacement confirmation sheet"), [destination lastPathComponent]];
+    self.title.stringValue = title;
+    
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"A file or folder with the same name already exists in the folder %@. Replacing it will overwrite its current contents.", @"replacement confirmation sheet"), [[destination URLByDeletingLastPathComponent] lastPathComponent]];
+    self.message.stringValue = message;
+}
+
 #pragma mark Other Public API
 - (void)quickLookSelection;
 {
@@ -450,27 +477,6 @@ enum {
 {
     [self.tagsAndTItlesController clearFieldsAndRemember:YES];
     [self _removeURLFromSourceList:url];
-}
-
-- (void)_replacementConfirmationSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo;
-{
-    NSURL *destination = (NSURL *)CFBridgingRelease(contextInfo);
-    [sheet orderOut:self];
-    if (returnCode == CCRReplacementConfirmationReplace)
-        [self _moveSelectionToURL:destination confirmingOverwrite:NO];
-}
-
-- (void)_configureReplacementConfirmationSheetForDestination:(NSURL *)destination;
-{
-    if (!self.replacementConfirmationSheet)
-        [NSBundle loadNibNamed:@"ReplacementConfirmation" owner:self];
-    NSAssert(self.replacementConfirmationSheet != nil, @"expected to have sheet window loaded");
-    
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"“%@” already exists. Do you want to replace it?", @"replacement confirmation sheet"), [destination lastPathComponent]];
-    self.title.stringValue = title;
-    
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"A file or folder with the same name already exists in the folder %@. Replacing it will overwrite its current contents.", @"replacement confirmation sheet"), [[destination URLByDeletingLastPathComponent] lastPathComponent]];
-    self.message.stringValue = message;
 }
 
 - (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
