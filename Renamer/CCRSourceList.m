@@ -110,6 +110,11 @@
     return [self.sourceURLs indexOfObject:url];
 }
 
+- (NSArray *)urls;
+{
+    return [NSArray arrayWithArray:self.sourceURLs];
+}
+
 #pragma mark Private API
 
 - (void)_updateHasContent;

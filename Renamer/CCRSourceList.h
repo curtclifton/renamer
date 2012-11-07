@@ -16,4 +16,6 @@
 - (void)removeURL:(NSURL *)url;
 - (NSURL *)urlForRow:(NSInteger)row;
 - (NSUInteger)rowIndexForURL:(NSURL *)url;
+- (NSArray *)urls;
+
 @end

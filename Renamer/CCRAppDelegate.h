@@ -10,6 +10,7 @@
 #import <Quartz/Quartz.h>
 
 extern NSString *CCRTagsAndTitlesDictionaryPreferenceKey;
+extern NSString *CCRSourceBookmarksRestorationCoderKey;
 
 @class CCRSourceList, CCRTagsAndTitlesController;
 

@@ -13,6 +13,7 @@
 #import "NSArray-CCRExtensions.h"
 
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
+NSString *CCRSourceBookmarksRestorationCoderKey = @"CCRSourceBookmarksRestorationCoderKey";
 
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
@@ -73,26 +74,54 @@ enum {
     return YES;
 }
 
-// CCC, 10/28/2012. Use restorable state stuff to squirrel away security scoped bookmarks for the source list URLs. See also NSWindowRestoration.h.
+// CCC, 10/28/2012. Use restorable state stuff to squirrel away security scoped bookmarks for the source list URLs.
  
  - (void)application:(NSApplication *)app willEncodeRestorableState:(NSCoder *)coder;
  {
      NSLog(@"In %@", NSStringFromSelector(_cmd));
- //    NSArray *bookmarks = [urls arrayByMappingBlock:^id(id object) {
- //        NSError *error;
- //        NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
- //
- //        if (bookmark == nil) {
- //            NSLog(@"error creating security-scoped bookmark: %@", error);
- //        }
- //
- //        return bookmark;
- //    }];
+     NSArray *sourceListBookmarks = [[self.sourceList urls] arrayByMappingBlock:^id(id object) {
+         NSAssert([object isKindOfClass:[NSURL class]], @"expected NSURL, got %@", [object class]);
+         NSError *error;
+         NSURL *url = object;
+         
+         BOOL startedSucessfully = [url startAccessingSecurityScopedResource];
+         // CCC, 11/7/2012. We get a NO here if the url was handed to us by powerbox, but then we successfully create the bookmark. We get a YES here if the url was restored from restorable state, but then we fail to create the bookmark, though no error is given to us.
+         NSLog(@"startedSucessfully: %@", startedSucessfully ? @"YES" : @"NO");
+         NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+         [url stopAccessingSecurityScopedResource];
+         
+         if (bookmark == nil) {
+             NSLog(@"error creating security-scoped bookmark: %@", error);
+         }
+         
+         return bookmark;
+     }];
+     [coder encodeObject:sourceListBookmarks forKey:CCRSourceBookmarksRestorationCoderKey];
  }
  
 - (void)application:(NSApplication *)app didDecodeRestorableState:(NSCoder *)coder;
  {
      NSLog(@"In %@", NSStringFromSelector(_cmd));
+     NSArray *sourceListBookmarks = [coder decodeObjectForKey:CCRSourceBookmarksRestorationCoderKey];
+     NSLog(@"decoded bookmarks: %@", sourceListBookmarks);
+     if (sourceListBookmarks != nil) {
+         NSArray *urls = [sourceListBookmarks arrayByMappingBlock:^id(id object) {
+             NSAssert([object isKindOfClass:[NSData class]], @"expected NSData, got %@", [object class]);
+             NSError *error;
+             BOOL isStale;
+             NSData *bookmark = object;
+             NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
+             
+             if (url == nil) {
+                 NSLog(@"error resolving security-scoped bookmark: %@", error);
+             }
+             
+             return isStale ? nil : url;
+         }];
+         
+         // CCC, 11/7/2012. Subsequent accesses to the urls now need to be bracketed by startAccessingSecurityScopedResource and stopAccessingSecurityScopedResource.
+         [self _addURLsToSourceList:urls];
+     }
  }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification;
@@ -540,14 +569,19 @@ enum {
             [NSApp beginSheet:self.replacementConfirmationSheet modalForWindow:self.window modalDelegate:self didEndSelector:@selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:(void *)context];
             return; // We'll get called again with confirming == NO if they choose to replace.
         }
+        // CCC, 11/7/2012. Need to bracket remove call with security-scoped access to destination:
         if ( ! [manager removeItemAtURL:destination error:&error]) {
             // CCC, 11/3/2012. This is crappy, but better than nothing for now.
             // CCC, 11/3/2012. Localize.
             NSBeginAlertSheet(@"Unable to Remove Existing File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to delete the existing file: %@", error);
             return;
         }
+    } else if ( ! ([[error domain] isEqualToString:NSCocoaErrorDomain] && [error code] == NSFileReadNoSuchFileError)) {
+        // We expect to get a NSFileReadNoSuchFileError. Anything else is an issue.
+        NSLog(@"Destination unreachable for reason other than not existing: %@", error);
     }
     
+    // CCC, 11/7/2012. Need to bracket move call with security-scoped access to urlOfFileToRename and destination:
     BOOL success = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
     if (!success) {
         // CCC, 11/3/2012. This is crappy, but better than nothing for now.
