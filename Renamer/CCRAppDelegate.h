@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
 
+extern NSString *CCRTagsAndTitlesDictionaryPreferenceKey;
+
 @class CCRSourceList, CCRTagsAndTitlesController;
 
 @interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSComboBoxDelegate, NSSplitViewDelegate, NSTableViewDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>

@@ -12,6 +12,8 @@
 #import "CCRTagsAndTitlesController.h"
 #import "NSArray-CCRExtensions.h"
 
+NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
+
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
 static NSAttributedString *shortSeparator;
@@ -99,6 +101,13 @@ enum {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
     [self _updateEnabledState];
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)notification;
+{
+    NSDictionary *tagsAndTitlesDictionary = @{}; // CCC, 11/6/2012.  @{@"regence" : @[@"expense ratio letter", @"explanation of benefits", @"privacy statement"], @"omni" : @[@"employment offer", @"reimbursement"], @"planet bike" : @[]};
+    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary};
+    [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification;

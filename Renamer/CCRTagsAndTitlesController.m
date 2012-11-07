@@ -19,18 +19,11 @@
 
 @implementation CCRTagsAndTitlesController
 
-+ (NSDictionary *)_dictionaryForTesting;
-{
-    return @{@"regence" : @[@"expense ratio letter", @"explanation of benefits", @"privacy statement"], @"omni" : @[@"employment offer", @"reimbursement"], @"planet bike" : @[]};
-}
-
 - (id)init;
 {
     self = [super init];
     if (self) {
-        _tagsToArrayOfTitlesDictionary = [NSMutableDictionary dictionary];
-        // CCC, 11/4/2012. For testing:
-        [_tagsToArrayOfTitlesDictionary addEntriesFromDictionary:[CCRTagsAndTitlesController _dictionaryForTesting]];
+        // any initialization needed?
     }
     return self;
 }
@@ -102,10 +95,26 @@
             currentTitles = [self arrayBySortingArray:[currentTitles arrayByAddingObject:title]];
     }
     self.tagsToArrayOfTitlesDictionary[tag] = currentTitles;
+    [[NSUserDefaults standardUserDefaults] setObject:self.tagsToArrayOfTitlesDictionary forKey:CCRTagsAndTitlesDictionaryPreferenceKey];
+    
     self.titleComboBox.stringValue = @"";
 }
 
 #pragma mark - Private API
+- (NSMutableDictionary *)tagsToArrayOfTitlesDictionary;
+{
+    if (_tagsToArrayOfTitlesDictionary == nil) {
+        NSDictionary *tagsAndTitlesDictionary = [[NSUserDefaults standardUserDefaults] objectForKey:CCRTagsAndTitlesDictionaryPreferenceKey];
+        NSLog(@"Dictionary: %@", tagsAndTitlesDictionary);
+        if (tagsAndTitlesDictionary == nil) {
+            _tagsToArrayOfTitlesDictionary = [NSMutableDictionary dictionary];
+        } else {
+            _tagsToArrayOfTitlesDictionary = [NSMutableDictionary dictionaryWithDictionary:tagsAndTitlesDictionary];
+        }
+    }
+    return _tagsToArrayOfTitlesDictionary;
+}
+
 - (NSArray *)arrayBySortingArray:(NSArray *)array;
 {
     return [array sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
