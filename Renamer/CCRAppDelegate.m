@@ -338,7 +338,15 @@ enum {
         return;
     }
 
+    NSInteger selectedItemIndex = self.sourceListTableView.selectedRow;
     [self _removeURLFromSourceList:[self _selectedFileURLOrNil]];
+    if (selectedItemIndex < self.sourceListTableView.numberOfRows) {
+        NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:selectedItemIndex];
+        [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
+    } else if (selectedItemIndex == self.sourceListTableView.numberOfRows) {
+        NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:self.sourceListTableView.numberOfRows - 1];
+        [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
+    }
 }
 
 #pragma mark - Private API
