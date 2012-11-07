@@ -350,9 +350,21 @@ enum {
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
 {
-    // CCC, 11/3/2012. Whenever we add URLs from the list we should manage the selection.
+    NSInteger selectedItemIndex = self.sourceListTableView.selectedRow;
+    NSURL *selectedItemURL = [self _selectedFileURLOrNil];
+    
     [self.sourceList addURLs:urls];
     [self.sourceListTableView reloadData];
+    
+    if (selectedItemIndex < 0 && urls != nil && [urls count] > 0) {
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:0];
+        [self.sourceListTableView selectRowIndexes:indexSet byExtendingSelection:NO];
+        return;
+    }
+    
+    if (selectedItemURL != nil) {
+        // CCC, 11/6/2012. Re-select the originally selected item
+    }
 }
 
 - (NSURL *)_selectedFileURLOrNil;
