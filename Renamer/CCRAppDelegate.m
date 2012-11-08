@@ -37,6 +37,8 @@ enum {
 - (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
 - (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
+
+- (void)_accessSecurityScopedURLs:(NSArray *)urls usingBlock:(void (^)(void))block;
 @end
 
 @implementation CCRAppDelegate
@@ -74,25 +76,23 @@ enum {
     return YES;
 }
 
-// CCC, 10/28/2012. Use restorable state stuff to squirrel away security scoped bookmarks for the source list URLs.
- 
+/*
  - (void)application:(NSApplication *)app willEncodeRestorableState:(NSCoder *)coder;
  {
      NSLog(@"In %@", NSStringFromSelector(_cmd));
      NSArray *sourceListBookmarks = [[self.sourceList urls] arrayByMappingBlock:^id(id object) {
          NSAssert([object isKindOfClass:[NSURL class]], @"expected NSURL, got %@", [object class]);
-         NSError *error;
          NSURL *url = object;
          
-         BOOL startedSucessfully = [url startAccessingSecurityScopedResource];
-         // CCC, 11/7/2012. We get a NO here if the url was handed to us by powerbox, but then we successfully create the bookmark. We get a YES here if the url was restored from restorable state, but then we fail to create the bookmark, though no error is given to us.
-         NSLog(@"startedSucessfully: %@", startedSucessfully ? @"YES" : @"NO");
-         NSData *bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-         [url stopAccessingSecurityScopedResource];
+         __block NSData *bookmark;
          
-         if (bookmark == nil) {
-             NSLog(@"error creating security-scoped bookmark: %@", error);
-         }
+         [self _accessSecurityScopedURLs:@[url] usingBlock:^{
+             NSError *error;
+             bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+             if (bookmark == nil) {
+                 NSLog(@"error creating security-scoped bookmark: %@", error);
+             }
+         }];
          
          return bookmark;
      }];
@@ -123,6 +123,7 @@ enum {
          [self _addURLsToSourceList:urls];
      }
  }
+ */
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification;
 {
@@ -591,5 +592,20 @@ enum {
     }
 
     [self _renameCompletedForURL:urlOfFIleToRename];
+}
+
+- (void)_accessSecurityScopedURLs:(NSArray *)urls usingBlock:(void (^)(void))block;
+{
+    for (NSURL *url in urls) {
+        BOOL startedSucessfully = [url startAccessingSecurityScopedResource];
+        NSLog(@"startedSucessfully: %@", startedSucessfully ? @"YES" : @"NO");
+        // CCC, 11/7/2012. We get a NO here if the url was handed to us by powerbox, but then we successfully create the bookmark. We get a YES here if the url was restored from restorable state, but then we fail to create the bookmark, though no error is given to us.
+    }
+    
+    block();
+    
+    [urls enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [obj stopAccessingSecurityScopedResource];
+    }];
 }
 @end
