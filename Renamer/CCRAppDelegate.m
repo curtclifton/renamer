@@ -13,6 +13,7 @@
 #import "NSArray-CCRExtensions.h"
 
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
+NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
 NSString *CCRSourceBookmarksRestorationCoderKey = @"CCRSourceBookmarksRestorationCoderKey";
 
 static CGFloat MinimumSourceListWidth = 120.0;
@@ -28,6 +29,7 @@ enum {
 
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
+@property (nonatomic, strong) NSData *destinationDirectoryBookmark;
 
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 
@@ -54,6 +56,11 @@ enum {
 {
     NSString *result = [[tagOrTitleString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] lowercaseString];
     return result;
+}
+
++ (NSSet *)keyPathsForValuesAffectingDestinationDirectory;
+{
+    return [NSSet setWithObject:@"destinationDirectoryBookmark"];
 }
 
 #pragma mark -
@@ -135,8 +142,12 @@ enum {
 - (void)applicationDidFinishLaunching:(NSNotification *)notification;
 {
     NSDictionary *tagsAndTitlesDictionary = @{}; // CCC, 11/6/2012.  @{@"regence" : @[@"expense ratio letter", @"explanation of benefits", @"privacy statement"], @"omni" : @[@"employment offer", @"reimbursement"], @"planet bike" : @[]};
-    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary};
+    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary, CCRDestinationDirectoryBookmarkPreferenceKey : [NSData data]};
     [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+    
+    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    if (destinationDirectoryBookmark != nil && [destinationDirectoryBookmark length] > 0)
+        self.destinationDirectoryBookmark = destinationDirectoryBookmark;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -234,8 +245,9 @@ enum {
 
 - (IBAction)renameAndFile:(id)sender;
 {
-    if (self.destinationDirectory != nil) {
-        NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
+    NSURL *destinationDirectory = self.destinationDirectory;
+    if (destinationDirectory != nil) {
+        NSURL *destination = [destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
         [self _moveSelectionToURL:destination confirmingOverwrite:YES];
         return;
     }
@@ -287,14 +299,21 @@ enum {
     [openPanel setCanChooseFiles:NO];
     [openPanel setMessage:NSLocalizedString(@"Choose the destination directory for renamed files.", @"Open sheet message")];
     [openPanel setPrompt:NSLocalizedString(@"Set Destination", @"Open sheet prompt")];
-    if (self.destinationDirectory)
-        [openPanel setDirectoryURL:self.destinationDirectory];
+    NSURL *destinationDirectory = self.destinationDirectory;
+    if (destinationDirectory != nil) {
+        // CCC, 11/10/2012. we probably need to start scoped access
+        [openPanel setDirectoryURL:destinationDirectory];
+    }
 
-    
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result != NSFileHandlingPanelOKButton)
             return;
-        self.destinationDirectory = [openPanel URL];
+        NSURL *destinationDirectory = [openPanel URL];
+        NSLog(@"got destination directory: %@", destinationDirectory);
+        NSError *error = nil;
+        self.destinationDirectoryBookmark = [destinationDirectory bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:@[NSURLPathKey] relativeToURL:nil error:&error];
+        if (self.destinationDirectoryBookmark == nil)
+            NSLog(@"Error creating security-scoped bookmark for %@: %@", destinationDirectory, error);
         [self _updateEnabledState];
     }];
 }
@@ -341,6 +360,31 @@ enum {
 }
 
 #pragma mark Other Public API
+- (NSURL *)destinationDirectory;
+{
+    if (self.destinationDirectoryBookmark == nil)
+        return nil;
+    
+    NSError *error = nil;
+    BOOL isStale = NO;
+    
+    NSURL *destinationDirectory = [NSURL URLByResolvingBookmarkData:self.destinationDirectoryBookmark options:NSURLBookmarkCreationWithSecurityScope relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
+    
+    if (isStale) {
+        NSLog(@"Destination directory bookmark is stale");
+        self.destinationDirectoryBookmark = nil;
+        return nil;
+    }
+    
+    if (!destinationDirectory) {
+        NSLog(@"Error resolving destination directory bookmark: %@", error);
+        self.destinationDirectoryBookmark = nil;
+    }
+    
+    NSLog(@"resolved destinationDirectoryBookmark to: %@", destinationDirectory);
+    return destinationDirectory;
+}
+
 - (void)quickLookSelection;
 {
     if ([self _selectedFileURLOrNil] == nil) {
@@ -370,6 +414,21 @@ enum {
 }
 
 #pragma mark - Private API
+
+- (void)setDestinationDirectoryBookmark:(NSData *)destinationDirectoryBookmark;
+{
+    if (destinationDirectoryBookmark == _destinationDirectoryBookmark)
+        return;
+    
+    [self willChangeValueForKey:@"destinationDirectoryBookmark"];
+    _destinationDirectoryBookmark = destinationDirectoryBookmark;
+    if (destinationDirectoryBookmark == nil) {
+        // avoid nil values in preference dictionary
+        destinationDirectoryBookmark = [NSData data];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    [self didChangeValueForKey:@"destinationDirectoryBookmark"];
+}
 
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 {
@@ -590,7 +649,14 @@ enum {
     }
     
     __block BOOL renameSucceeded;
-    [self _accessSecurityScopedURLs:@[urlOfFIleToRename, destination] usingBlock:^{
+    NSArray *urlsToAccess;
+    NSURL *destinationDirectory = self.destinationDirectory;
+    if (destinationDirectory != nil)
+        urlsToAccess = @[urlOfFIleToRename, destinationDirectory, destination];
+    else
+        urlsToAccess = @[urlOfFIleToRename, destination];    
+    
+    [self _accessSecurityScopedURLs:urlsToAccess usingBlock:^{
         NSError *error = nil;
         renameSucceeded = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
         if (!renameSucceeded) {

@@ -22,9 +22,9 @@
 - (id)transformedValue:(id)value;
 {
     if (value == nil)
-        return @"";
+        return @"no value set";
     
-    NSAssert([value isKindOfClass:[NSURL class]] , @"Expects NSURL");
+    NSAssert([value isKindOfClass:[NSURL class]] , @"Expects NSURL, got %@", [value class]);
     return [value path];
 }
 @end

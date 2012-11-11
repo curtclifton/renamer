@@ -21,7 +21,7 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 
 // bindings
 @property (nonatomic) BOOL enableControls;
-@property (nonatomic, strong) NSURL *destinationDirectory;
+@property (readonly) NSURL *destinationDirectory;
 
 // main app window
 @property (assign) IBOutlet NSWindow *window;
