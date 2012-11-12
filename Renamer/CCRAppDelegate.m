@@ -181,39 +181,6 @@ enum {
 
 #pragma mark Main Window
 
-- (NSURL *)_destinationDirectory;
-{
-    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
-    if (destinationDirectoryBookmark == nil || [destinationDirectoryBookmark length] == 0)
-        return nil;
-    
-    BOOL isStale = NO;
-    NSError *error = nil;
-    NSURL *destinationDirectory = [NSURL URLByResolvingBookmarkData:destinationDirectoryBookmark options:NSURLBookmarkResolutionWithoutUI relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
-    
-    if (destinationDirectory == nil)
-        NSLog(@"failed to resolve URL from bookmark: %@\nerror: %@", destinationDirectoryBookmark, error);
-    
-    if (isStale)
-        destinationDirectory = nil;
-
-    return destinationDirectory;
-}
-
-- (void)_setDestinationDirectory:(NSURL *)updatedURL previousDestinationDirectory:(NSURL *)previousURL;
-{
-    if ([[updatedURL absoluteString] isEqualToString:[previousURL absoluteString]])
-        return;
-    
-    NSError *error = nil;
-    NSData *destinationDirectoryBookmark = [updatedURL bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-    if (destinationDirectoryBookmark == nil) {
-        NSLog(@"Failed to create bookmark for %@. Error: %@", updatedURL, error);
-    } else {
-        [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
-    }
-}
-
 - (IBAction)renameAndFile:(id)sender;
 {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
@@ -359,6 +326,39 @@ enum {
 
     [self.sourceListContainerView setNeedsDisplay:YES];
     [self.controlsPaneContainerView setNeedsDisplay:YES];
+}
+
+- (NSURL *)_destinationDirectory;
+{
+    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    if (destinationDirectoryBookmark == nil || [destinationDirectoryBookmark length] == 0)
+        return nil;
+    
+    BOOL isStale = NO;
+    NSError *error = nil;
+    NSURL *destinationDirectory = [NSURL URLByResolvingBookmarkData:destinationDirectoryBookmark options:NSURLBookmarkResolutionWithoutUI relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
+    
+    if (destinationDirectory == nil)
+        NSLog(@"failed to resolve URL from bookmark: %@\nerror: %@", destinationDirectoryBookmark, error);
+    
+    if (isStale)
+        destinationDirectory = nil;
+    
+    return destinationDirectory;
+}
+
+- (void)_setDestinationDirectory:(NSURL *)updatedURL previousDestinationDirectory:(NSURL *)previousURL;
+{
+    if ([[updatedURL absoluteString] isEqualToString:[previousURL absoluteString]])
+        return;
+    
+    NSError *error = nil;
+    NSData *destinationDirectoryBookmark = [updatedURL bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    if (destinationDirectoryBookmark == nil) {
+        NSLog(@"Failed to create bookmark for %@. Error: %@", updatedURL, error);
+    } else {
+        [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    }
 }
 
 - (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString;
