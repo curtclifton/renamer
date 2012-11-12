@@ -444,9 +444,14 @@ enum {
             [computedName appendAttributedString:[[NSAttributedString alloc] initWithString:fileExtension]];
         }
         
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+        [paragraphStyle setAlignment:NSCenterTextAlignment];
+        [paragraphStyle setLineBreakMode:NSLineBreakByTruncatingTail];
+        [computedName addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, computedName.length)];
+        
         [self.computedNameTextField setAttributedStringValue:computedName];
     } else {
-        [self.computedNameTextField setStringValue:@"—"];
+        [self.computedNameTextField setStringValue:@""];
     }
     
     [self.renameAndFileButton setEnabled:self.enableControls && fieldsValid];
