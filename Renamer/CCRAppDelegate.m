@@ -13,7 +13,7 @@
 #import "NSArray-CCRExtensions.h"
 
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
-NSString *CCRSourceBookmarksRestorationCoderKey = @"CCRSourceBookmarksRestorationCoderKey";
+NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
 
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
@@ -135,7 +135,8 @@ enum {
 - (void)applicationDidFinishLaunching:(NSNotification *)notification;
 {
     NSDictionary *tagsAndTitlesDictionary = @{}; // CCC, 11/6/2012.  @{@"regence" : @[@"expense ratio letter", @"explanation of benefits", @"privacy statement"], @"omni" : @[@"employment offer", @"reimbursement"], @"planet bike" : @[]};
-    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary};
+    NSData *destinationDirectoryEmptyBookmark = [NSData data];
+    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary, CCRDestinationDirectoryBookmarkPreferenceKey : destinationDirectoryEmptyBookmark};
     [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 }
 
@@ -234,15 +235,42 @@ enum {
 
 - (IBAction)renameAndFile:(id)sender;
 {
-    if (self.destinationDirectory != nil) {
-        NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
-        [self _moveSelectionToURL:destination confirmingOverwrite:YES];
-        return;
-    }
+    // CCC, 11/11/2012. We can remove all the confirming stuff, including the nib, if it works well to prompt on every save.
+//    if (self.destinationDirectory != nil) {
+//        NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
+//        [self _moveSelectionToURL:destination confirmingOverwrite:YES];
+//        return;
+//    }
 
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     [savePanel setNameFieldLabel:NSLocalizedString(@"New Name:", @"label for name field in save panel")];
     [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
+    
+    // -----------------------------------------------------------------------------
+    // CCC, 11/11/2012. Extract to helper:
+    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    NSURL *destinationDirectory = nil;
+    if (destinationDirectoryBookmark != nil && [destinationDirectoryBookmark length] > 0) {
+        BOOL isStale = NO;
+        NSError *error = nil;
+        destinationDirectory = [NSURL URLByResolvingBookmarkData:destinationDirectoryBookmark options:NSURLBookmarkResolutionWithoutUI relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
+
+        if (destinationDirectory == nil) {
+            NSLog(@"failed to resolve URL from bookmark: %@\nerror: %@", destinationDirectoryBookmark, error);
+        }
+
+        if (isStale) {
+            destinationDirectory = nil;
+        }
+
+        if (destinationDirectory != nil) {
+//            BOOL succeeded = [destinationDirectory startAccessingSecurityScopedResource];
+//            if (!succeeded)
+//                NSLog(@"failed to start accessing %@", destinationDirectory);
+            [savePanel setDirectoryURL:destinationDirectory];
+        }
+    }
+    // -----------------------------------------------------------------------------
     
     [savePanel setExtensionHidden:NO];
     NSString *pathExtension = [[self _selectedFileURLOrNil] pathExtension];
@@ -251,10 +279,34 @@ enum {
     [savePanel setPrompt:NSLocalizedString(@"Rename", @"label for button in save panel")];
     
     [savePanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
+//        if (destinationDirectory != nil) {
+//            [destinationDirectory stopAccessingSecurityScopedResource];
+//        }
+        
         if (result != NSFileHandlingPanelOKButton)
             return;
         
-        [self _moveSelectionToURL:[savePanel URL] confirmingOverwrite:NO];
+        NSURL *destination = [savePanel URL];
+        
+        // -----------------------------------------------------------------------------
+        // CCC, 11/11/2012. Extract to helper:
+        NSURL *updatedDestinationDirectory = [destination URLByDeletingLastPathComponent];
+        if ( ! [[updatedDestinationDirectory absoluteString] isEqualToString:[destinationDirectory absoluteString]]) {
+            NSError *error = nil;
+//            BOOL succeeded = [updatedDestinationDirectory startAccessingSecurityScopedResource];
+//            if (!succeeded)
+//                NSLog(@"failed to start accessing %@", updatedDestinationDirectory);
+            NSData *destinationDirectoryBookmark = [updatedDestinationDirectory bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+//            [updatedDestinationDirectory stopAccessingSecurityScopedResource];
+            if (destinationDirectoryBookmark == nil) {
+                NSLog(@"Failed to create bookmark for %@. Error: %@", updatedDestinationDirectory, error);
+            } else {
+                [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+            }
+        }
+        // -----------------------------------------------------------------------------
+        
+        [self _moveSelectionToURL:destination confirmingOverwrite:NO];
     }];
 }
 
@@ -287,9 +339,9 @@ enum {
     [openPanel setCanChooseFiles:NO];
     [openPanel setMessage:NSLocalizedString(@"Choose the destination directory for renamed files.", @"Open sheet message")];
     [openPanel setPrompt:NSLocalizedString(@"Set Destination", @"Open sheet prompt")];
-    if (self.destinationDirectory)
+    if (self.destinationDirectory) {
         [openPanel setDirectoryURL:self.destinationDirectory];
-
+    }
     
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
         if (result != NSFileHandlingPanelOKButton)
@@ -605,18 +657,19 @@ enum {
     [self _renameCompletedForURL:urlOfFIleToRename];
 }
 
+// CCC, 11/11/2012. Lose calls to this:
 - (void)_accessSecurityScopedURLs:(NSArray *)urls usingBlock:(void (^)(void))block;
 {
-    for (NSURL *url in urls) {
-        BOOL startedSucessfully = [url startAccessingSecurityScopedResource];
-        NSLog(@"startAccessingSecurityScopedResource at %@: %@", url, startedSucessfully ? @"succeeded" : @"FAILED");
-        // CCC, 11/7/2012. We get a NO here if the url was handed to us by powerbox, but then we successfully create the bookmark. We get a YES here if the url was restored from restorable state, but then we fail to create the bookmark, though no error is given to us.
-    }
+//    for (NSURL *url in urls) {
+//        BOOL startedSucessfully = [url startAccessingSecurityScopedResource];
+//        NSLog(@"startAccessingSecurityScopedResource at %@: %@", url, startedSucessfully ? @"succeeded" : @"FAILED");
+//        // CCC, 11/7/2012. We get a NO here if the url was handed to us by powerbox, but then we successfully create the bookmark. We get a YES here if the url was restored from restorable state, but then we fail to create the bookmark, though no error is given to us.
+//    }
     
     block();
     
-    [urls enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [obj stopAccessingSecurityScopedResource];
-    }];
+//    [urls enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//        [obj stopAccessingSecurityScopedResource];
+//    }];
 }
 @end
