@@ -14,6 +14,7 @@
 
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
 NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
+NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmarkPreferenceKey";
 
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
@@ -33,6 +34,9 @@ enum {
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (NSURL *)_selectedFileURLOrNil;
+
+- (NSURL *)_directoryForPreferenceKey:(NSString *)preferenceKey;
+- (void)_setDirectory:(NSURL *)updatedURL forPreferenceKey:(NSString *)preferenceKey previousDirectory:(NSURL *)previousURL;
 
 - (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
@@ -85,7 +89,8 @@ enum {
 {
     NSDictionary *tagsAndTitlesDictionary = @{}; 
     NSData *destinationDirectoryEmptyBookmark = [NSData data];
-    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary, CCRDestinationDirectoryBookmarkPreferenceKey : destinationDirectoryEmptyBookmark};
+    NSData *sourceDirectoryEmptyBookmark = [NSData data];
+    NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary, CCRDestinationDirectoryBookmarkPreferenceKey : destinationDirectoryEmptyBookmark, CCRSourceDirectoryBookmarkPreferenceKey : sourceDirectoryEmptyBookmark};
     [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 }
 
@@ -187,7 +192,7 @@ enum {
     [savePanel setNameFieldLabel:NSLocalizedString(@"New Name:", @"label for name field in save panel")];
     [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
     
-    NSURL *destinationDirectory = [self _destinationDirectory];
+    NSURL *destinationDirectory = [self _directoryForPreferenceKey:CCRDestinationDirectoryBookmarkPreferenceKey];
     if (destinationDirectory != nil)
         [savePanel setDirectoryURL:destinationDirectory];
     
@@ -204,7 +209,7 @@ enum {
         NSURL *destination = [savePanel URL];
         
         NSURL *updatedDestinationDirectory = [destination URLByDeletingLastPathComponent];
-        [self _setDestinationDirectory:updatedDestinationDirectory previousDestinationDirectory:destinationDirectory];
+        [self _setDirectory:updatedDestinationDirectory forPreferenceKey:CCRDestinationDirectoryBookmarkPreferenceKey previousDirectory:destinationDirectory];
         
         [self _moveSelectionToURL:destination];
     }];
@@ -328,9 +333,9 @@ enum {
     [self.controlsPaneContainerView setNeedsDisplay:YES];
 }
 
-- (NSURL *)_destinationDirectory;
+- (NSURL *)_directoryForPreferenceKey:(NSString *)preferenceKey;
 {
-    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
     if (destinationDirectoryBookmark == nil || [destinationDirectoryBookmark length] == 0)
         return nil;
     
@@ -347,7 +352,7 @@ enum {
     return destinationDirectory;
 }
 
-- (void)_setDestinationDirectory:(NSURL *)updatedURL previousDestinationDirectory:(NSURL *)previousURL;
+- (void)_setDirectory:(NSURL *)updatedURL forPreferenceKey:(NSString *)preferenceKey previousDirectory:(NSURL *)previousURL;
 {
     if ([[updatedURL absoluteString] isEqualToString:[previousURL absoluteString]])
         return;
@@ -357,7 +362,7 @@ enum {
     if (destinationDirectoryBookmark == nil) {
         NSLog(@"Failed to create bookmark for %@. Error: %@", updatedURL, error);
     } else {
-        [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+        [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:preferenceKey];
     }
 }
 
