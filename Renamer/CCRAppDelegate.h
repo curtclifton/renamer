@@ -48,15 +48,6 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 - (IBAction)chooseDestination:(id)sender;
 - (IBAction)includeDayChanged:(id)sender;
 
-// replacement confirmation sheet
-@property (weak) IBOutlet NSWindow *replacementConfirmationSheet;
-@property (weak) IBOutlet NSTextField *title;
-@property (weak) IBOutlet NSTextField *message;
-@property (weak) IBOutlet NSButton *replaceButton;
-
-- (IBAction)cancelReplacementConfirmation:(id)sender;
-- (IBAction)replaceReplacementConfirmation:(id)sender;
-
 // other API
 - (void)quickLookSelection;
 - (void)addPathsToSourceList:(NSArray *)filenames;

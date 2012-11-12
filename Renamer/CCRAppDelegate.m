@@ -36,9 +36,7 @@ enum {
 
 - (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
-- (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
-
-- (void)_accessSecurityScopedURLs:(NSArray *)urls usingBlock:(void (^)(void))block;
+- (void)_moveSelectionToURL:(NSURL *)destination;
 @end
 
 @implementation CCRAppDelegate
@@ -76,55 +74,6 @@ enum {
     return YES;
 }
 
-/*
- - (void)application:(NSApplication *)app willEncodeRestorableState:(NSCoder *)coder;
- {
-     NSLog(@"In %@", NSStringFromSelector(_cmd));
-     NSArray *sourceListBookmarks = [[self.sourceList urls] arrayByMappingBlock:^id(id object) {
-         NSAssert([object isKindOfClass:[NSURL class]], @"expected NSURL, got %@", [object class]);
-         NSURL *url = object;
-         
-         __block NSData *bookmark;
-         
-         [self _accessSecurityScopedURLs:@[url] usingBlock:^{
-             NSError *error;
-             bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-             if (bookmark == nil) {
-                 NSLog(@"error creating security-scoped bookmark: %@", error);
-             }
-         }];
-         
-         return bookmark;
-     }];
-     [coder encodeObject:sourceListBookmarks forKey:CCRSourceBookmarksRestorationCoderKey];
- }
- 
-- (void)application:(NSApplication *)app didDecodeRestorableState:(NSCoder *)coder;
- {
-     NSLog(@"In %@", NSStringFromSelector(_cmd));
-     NSArray *sourceListBookmarks = [coder decodeObjectForKey:CCRSourceBookmarksRestorationCoderKey];
-     NSLog(@"decoded bookmarks: %@", sourceListBookmarks);
-     if (sourceListBookmarks != nil) {
-         NSArray *urls = [sourceListBookmarks arrayByMappingBlock:^id(id object) {
-             NSAssert([object isKindOfClass:[NSData class]], @"expected NSData, got %@", [object class]);
-             NSError *error;
-             BOOL isStale;
-             NSData *bookmark = object;
-             NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
-             
-             if (url == nil) {
-                 NSLog(@"error resolving security-scoped bookmark: %@", error);
-             }
-             
-             return isStale ? nil : url;
-         }];
-         
-         // CCC, 11/7/2012. Subsequent accesses to the urls now need to be bracketed by startAccessingSecurityScopedResource and stopAccessingSecurityScopedResource.
-         [self _addURLsToSourceList:urls];
-     }
- }
- */
-
 - (void)applicationWillFinishLaunching:(NSNotification *)notification;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
@@ -134,7 +83,7 @@ enum {
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification;
 {
-    NSDictionary *tagsAndTitlesDictionary = @{}; // CCC, 11/6/2012.  @{@"regence" : @[@"expense ratio letter", @"explanation of benefits", @"privacy statement"], @"omni" : @[@"employment offer", @"reimbursement"], @"planet bike" : @[]};
+    NSDictionary *tagsAndTitlesDictionary = @{}; 
     NSData *destinationDirectoryEmptyBookmark = [NSData data];
     NSDictionary *appDefaults = @{CCRTagsAndTitlesDictionaryPreferenceKey : tagsAndTitlesDictionary, CCRDestinationDirectoryBookmarkPreferenceKey : destinationDirectoryEmptyBookmark};
     [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
@@ -144,7 +93,6 @@ enum {
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
 
 #pragma mark NSComboBoxDelegate
 - (void)comboBoxWillDismiss:(NSNotification *)notification;
@@ -235,13 +183,6 @@ enum {
 
 - (IBAction)renameAndFile:(id)sender;
 {
-    // CCC, 11/11/2012. We can remove all the confirming stuff, including the nib, if it works well to prompt on every save.
-//    if (self.destinationDirectory != nil) {
-//        NSURL *destination = [self.destinationDirectory URLByAppendingPathComponent:self.computedNameTextField.stringValue];
-//        [self _moveSelectionToURL:destination confirmingOverwrite:YES];
-//        return;
-//    }
-
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     [savePanel setNameFieldLabel:NSLocalizedString(@"New Name:", @"label for name field in save panel")];
     [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
@@ -264,9 +205,6 @@ enum {
         }
 
         if (destinationDirectory != nil) {
-//            BOOL succeeded = [destinationDirectory startAccessingSecurityScopedResource];
-//            if (!succeeded)
-//                NSLog(@"failed to start accessing %@", destinationDirectory);
             [savePanel setDirectoryURL:destinationDirectory];
         }
     }
@@ -279,10 +217,6 @@ enum {
     [savePanel setPrompt:NSLocalizedString(@"Rename", @"label for button in save panel")];
     
     [savePanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-//        if (destinationDirectory != nil) {
-//            [destinationDirectory stopAccessingSecurityScopedResource];
-//        }
-        
         if (result != NSFileHandlingPanelOKButton)
             return;
         
@@ -293,11 +227,7 @@ enum {
         NSURL *updatedDestinationDirectory = [destination URLByDeletingLastPathComponent];
         if ( ! [[updatedDestinationDirectory absoluteString] isEqualToString:[destinationDirectory absoluteString]]) {
             NSError *error = nil;
-//            BOOL succeeded = [updatedDestinationDirectory startAccessingSecurityScopedResource];
-//            if (!succeeded)
-//                NSLog(@"failed to start accessing %@", updatedDestinationDirectory);
             NSData *destinationDirectoryBookmark = [updatedDestinationDirectory bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-//            [updatedDestinationDirectory stopAccessingSecurityScopedResource];
             if (destinationDirectoryBookmark == nil) {
                 NSLog(@"Failed to create bookmark for %@. Error: %@", updatedDestinationDirectory, error);
             } else {
@@ -306,7 +236,7 @@ enum {
         }
         // -----------------------------------------------------------------------------
         
-        [self _moveSelectionToURL:destination confirmingOverwrite:NO];
+        [self _moveSelectionToURL:destination];
     }];
 }
 
@@ -354,42 +284,6 @@ enum {
 - (IBAction)includeDayChanged:(id)sender;
 {
     [self _updateEnabledState];
-}
-
-#pragma mark Replacement Confirmation Sheet
-
-- (IBAction)cancelReplacementConfirmation:(id)sender {
-    [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationCancel];
-}
-
-- (IBAction)replaceReplacementConfirmation:(id)sender {
-    [NSApp endSheet:self.replacementConfirmationSheet returnCode:CCRReplacementConfirmationReplace];
-}
-
-- (void)_replacementConfirmationSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo;
-{
-    NSURL *destination = (NSURL *)CFBridgingRelease(contextInfo);
-    [sheet orderOut:self];
-    if (returnCode == CCRReplacementConfirmationReplace)
-        [self _moveSelectionToURL:destination confirmingOverwrite:NO];
-}
-
-- (void)_configureReplacementConfirmationSheetForDestination:(NSURL *)destination;
-{
-    if (!self.replacementConfirmationSheet) {
-        [NSBundle loadNibNamed:@"ReplacementConfirmation" owner:self];
-        NSView *sheetContentView = self.replacementConfirmationSheet.contentView;
-        NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:sheetContentView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.replaceButton attribute:NSLayoutAttributeBottom multiplier:1 constant:20];
-        heightConstraint.priority = NSLayoutPriorityDefaultHigh;
-        [sheetContentView addConstraint:heightConstraint];
-    }
-    NSAssert(self.replacementConfirmationSheet != nil, @"expected to have sheet window loaded");
-    
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"“%@” already exists. Do you want to replace it?", @"replacement confirmation sheet"), [destination lastPathComponent]];
-    self.title.stringValue = title;
-    
-    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"A file or folder with the same name already exists in the folder %@. Replacing it will overwrite its current contents.", @"replacement confirmation sheet"), [[destination URLByDeletingLastPathComponent] lastPathComponent]];
-    self.message.stringValue = message;
 }
 
 #pragma mark Other Public API
@@ -598,7 +492,7 @@ enum {
     [self _removeURLFromSourceList:url];
 }
 
-- (void)_moveSelectionToURL:(NSURL *)destination confirmingOverwrite:(BOOL)confirming;
+- (void)_moveSelectionToURL:(NSURL *)destination;
 {
     NSURL *urlOfFIleToRename = [self _selectedFileURLOrNil];
     NSAssert(urlOfFIleToRename != nil, @"Must have a file to rename");
@@ -615,25 +509,13 @@ enum {
     NSFileManager *manager = [NSFileManager defaultManager];
     NSError *error = nil;
     
-    if ([destination checkResourceIsReachableAndReturnError:&error]) {
-        if (confirming) {
-            CFTypeRef context = CFBridgingRetain(destination);
-            [self _configureReplacementConfirmationSheetForDestination:destination];
-            [NSApp beginSheet:self.replacementConfirmationSheet modalForWindow:self.window modalDelegate:self didEndSelector:@selector(_replacementConfirmationSheetDidEnd:returnCode:contextInfo:) contextInfo:(void *)context];
-            return; // We'll get called again with confirming == NO if they choose to replace.
-        }
-
-        __block BOOL removeSucceeded = NO;
-        [self _accessSecurityScopedURLs:@[destination] usingBlock:^{
-            NSError *error = nil;
-            removeSucceeded = [manager removeItemAtURL:destination error:&error];
-            if (!removeSucceeded) {
-                // CCC, 11/3/2012. This is crappy, but better than nothing for now.
-                // CCC, 11/3/2012. Localize.
-                NSBeginAlertSheet(@"Unable to Remove Existing File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to delete the existing file: %@", error);
-            }
-        }];
+    if ([destination checkResourceIsReachableAndReturnError:&error]) {        
+        NSError *error = nil;
+        BOOL removeSucceeded = [manager removeItemAtURL:destination error:&error];
         if (!removeSucceeded) {
+            // CCC, 11/3/2012. This is crappy, but better than nothing for now.
+            // CCC, 11/3/2012. Localize.
+            NSBeginAlertSheet(@"Unable to Remove Existing File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to delete the existing file: %@", error);
             return;
         }
     } else if ( ! ([[error domain] isEqualToString:NSCocoaErrorDomain] && [error code] == NSFileReadNoSuchFileError)) {
@@ -641,35 +523,16 @@ enum {
         NSLog(@"Destination unreachable for reason other than not existing: %@", error);
     }
     
-    __block BOOL renameSucceeded;
-    [self _accessSecurityScopedURLs:@[urlOfFIleToRename, destination] usingBlock:^{
-        NSError *error = nil;
-        renameSucceeded = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
-        if (!renameSucceeded) {
-            // CCC, 11/3/2012. This is crappy, but better than nothing for now.
-            // CCC, 11/3/2012. Localize.
-            NSBeginAlertSheet(@"Unable to Rename File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to rename the file: %@", error);
-        }
-    }];
-    if (!renameSucceeded)
+    error = nil;
+    BOOL renameSucceeded = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
+    if (!renameSucceeded) {
+        // CCC, 11/3/2012. This is crappy, but better than nothing for now.
+        // CCC, 11/3/2012. Localize.
+        NSBeginAlertSheet(@"Unable to Rename File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to rename the file: %@", error);
         return;
+    }
 
     [self _renameCompletedForURL:urlOfFIleToRename];
 }
 
-// CCC, 11/11/2012. Lose calls to this:
-- (void)_accessSecurityScopedURLs:(NSArray *)urls usingBlock:(void (^)(void))block;
-{
-//    for (NSURL *url in urls) {
-//        BOOL startedSucessfully = [url startAccessingSecurityScopedResource];
-//        NSLog(@"startAccessingSecurityScopedResource at %@: %@", url, startedSucessfully ? @"succeeded" : @"FAILED");
-//        // CCC, 11/7/2012. We get a NO here if the url was handed to us by powerbox, but then we successfully create the bookmark. We get a YES here if the url was restored from restorable state, but then we fail to create the bookmark, though no error is given to us.
-//    }
-    
-    block();
-    
-//    [urls enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//        [obj stopAccessingSecurityScopedResource];
-//    }];
-}
 @end
