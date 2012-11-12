@@ -220,6 +220,11 @@ enum {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     [openPanel setCanChooseDirectories:YES];
     [openPanel setAllowsMultipleSelection:YES];
+    
+    NSURL *sourceDirectory = [self _directoryForPreferenceKey:CCRSourceDirectoryBookmarkPreferenceKey];
+    if (sourceDirectory)
+        [openPanel setDirectoryURL:sourceDirectory];
+    
     [openPanel setMessage:NSLocalizedString(@"Choose files to be renamed.", @"Open sheet message")];
     
     [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
@@ -227,6 +232,12 @@ enum {
             return;
         
         NSArray *urls = [openPanel URLs];
+        
+        if ([urls count] > 0) {
+            NSURL *updatedSourceDirectory  = [urls[0] URLByDeletingLastPathComponent];
+            [self _setDirectory:updatedSourceDirectory forPreferenceKey:CCRSourceDirectoryBookmarkPreferenceKey previousDirectory:sourceDirectory];
+        }
+        
         [self _addURLsToSourceList:urls];
     }];
 }
