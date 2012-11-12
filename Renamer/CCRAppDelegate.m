@@ -181,34 +181,48 @@ enum {
 
 #pragma mark Main Window
 
+- (NSURL *)_destinationDirectory;
+{
+    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    if (destinationDirectoryBookmark == nil || [destinationDirectoryBookmark length] == 0)
+        return nil;
+    
+    BOOL isStale = NO;
+    NSError *error = nil;
+    NSURL *destinationDirectory = [NSURL URLByResolvingBookmarkData:destinationDirectoryBookmark options:NSURLBookmarkResolutionWithoutUI relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
+    
+    if (destinationDirectory == nil)
+        NSLog(@"failed to resolve URL from bookmark: %@\nerror: %@", destinationDirectoryBookmark, error);
+    
+    if (isStale)
+        destinationDirectory = nil;
+
+    return destinationDirectory;
+}
+
+- (void)_setDestinationDirectory:(NSURL *)updatedURL previousDestinationDirectory:(NSURL *)previousURL;
+{
+    if ([[updatedURL absoluteString] isEqualToString:[previousURL absoluteString]])
+        return;
+    
+    NSError *error = nil;
+    NSData *destinationDirectoryBookmark = [updatedURL bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+    if (destinationDirectoryBookmark == nil) {
+        NSLog(@"Failed to create bookmark for %@. Error: %@", updatedURL, error);
+    } else {
+        [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
+    }
+}
+
 - (IBAction)renameAndFile:(id)sender;
 {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     [savePanel setNameFieldLabel:NSLocalizedString(@"New Name:", @"label for name field in save panel")];
     [savePanel setNameFieldStringValue:self.computedNameTextField.stringValue];
     
-    // -----------------------------------------------------------------------------
-    // CCC, 11/11/2012. Extract to helper:
-    NSData *destinationDirectoryBookmark = [[NSUserDefaults standardUserDefaults] objectForKey:CCRDestinationDirectoryBookmarkPreferenceKey];
-    NSURL *destinationDirectory = nil;
-    if (destinationDirectoryBookmark != nil && [destinationDirectoryBookmark length] > 0) {
-        BOOL isStale = NO;
-        NSError *error = nil;
-        destinationDirectory = [NSURL URLByResolvingBookmarkData:destinationDirectoryBookmark options:NSURLBookmarkResolutionWithoutUI relativeToURL:nil bookmarkDataIsStale:&isStale error:&error];
-
-        if (destinationDirectory == nil) {
-            NSLog(@"failed to resolve URL from bookmark: %@\nerror: %@", destinationDirectoryBookmark, error);
-        }
-
-        if (isStale) {
-            destinationDirectory = nil;
-        }
-
-        if (destinationDirectory != nil) {
-            [savePanel setDirectoryURL:destinationDirectory];
-        }
-    }
-    // -----------------------------------------------------------------------------
+    NSURL *destinationDirectory = [self _destinationDirectory];
+    if (destinationDirectory != nil)
+        [savePanel setDirectoryURL:destinationDirectory];
     
     [savePanel setExtensionHidden:NO];
     NSString *pathExtension = [[self _selectedFileURLOrNil] pathExtension];
@@ -222,19 +236,8 @@ enum {
         
         NSURL *destination = [savePanel URL];
         
-        // -----------------------------------------------------------------------------
-        // CCC, 11/11/2012. Extract to helper:
         NSURL *updatedDestinationDirectory = [destination URLByDeletingLastPathComponent];
-        if ( ! [[updatedDestinationDirectory absoluteString] isEqualToString:[destinationDirectory absoluteString]]) {
-            NSError *error = nil;
-            NSData *destinationDirectoryBookmark = [updatedDestinationDirectory bookmarkDataWithOptions:NSURLBookmarkCreationMinimalBookmark includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-            if (destinationDirectoryBookmark == nil) {
-                NSLog(@"Failed to create bookmark for %@. Error: %@", updatedDestinationDirectory, error);
-            } else {
-                [[NSUserDefaults standardUserDefaults] setObject:destinationDirectoryBookmark forKey:CCRDestinationDirectoryBookmarkPreferenceKey];
-            }
-        }
-        // -----------------------------------------------------------------------------
+        [self _setDestinationDirectory:updatedDestinationDirectory previousDestinationDirectory:destinationDirectory];
         
         [self _moveSelectionToURL:destination];
     }];
