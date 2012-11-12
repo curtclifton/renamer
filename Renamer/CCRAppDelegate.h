@@ -45,7 +45,6 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 - (IBAction)renameAndFile:(id)sender;
 - (IBAction)open:(id)sender;
 - (IBAction)quicklook:(id)sender;
-- (IBAction)chooseDestination:(id)sender;
 - (IBAction)includeDayChanged:(id)sender;
 
 // other API

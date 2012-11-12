@@ -261,26 +261,6 @@ enum {
     [self quickLookSelection];
 }
 
-- (IBAction)chooseDestination:(id)sender;
-{
-    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    [openPanel setCanChooseDirectories:YES];
-    [openPanel setAllowsMultipleSelection:NO];
-    [openPanel setCanChooseFiles:NO];
-    [openPanel setMessage:NSLocalizedString(@"Choose the destination directory for renamed files.", @"Open sheet message")];
-    [openPanel setPrompt:NSLocalizedString(@"Set Destination", @"Open sheet prompt")];
-    if (self.destinationDirectory) {
-        [openPanel setDirectoryURL:self.destinationDirectory];
-    }
-    
-    [openPanel beginSheetModalForWindow:self.window completionHandler:^(NSInteger result) {
-        if (result != NSFileHandlingPanelOKButton)
-            return;
-        self.destinationDirectory = [openPanel URL];
-        [self _updateEnabledState];
-    }];
-}
-
 - (IBAction)includeDayChanged:(id)sender;
 {
     [self _updateEnabledState];
