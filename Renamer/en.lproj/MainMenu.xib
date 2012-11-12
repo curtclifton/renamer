@@ -1314,7 +1314,7 @@
 				<string key="NSWindowClass">NSWindow</string>
 				<nil key="NSViewClass"/>
 				<nil key="NSUserInterfaceItemIdentifier"/>
-				<string key="NSWindowContentMinSize">{488, 208}</string>
+				<string key="NSWindowContentMinSize">{484, 193}</string>
 				<object class="NSView" key="NSWindowView" id="439893737">
 					<reference key="NSNextResponder"/>
 					<array class="NSMutableArray" key="NSSubviews">
@@ -2028,7 +2028,7 @@
 					<reference key="NSNextKeyView" ref="230206613"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
-				<string key="NSMinSize">{488, 230}</string>
+				<string key="NSMinSize">{484, 215}</string>
 				<string key="NSMaxSize">{10000000000000, 10000000000000}</string>
 				<bool key="NSWindowIsRestorable">YES</bool>
 			</object>
@@ -4345,7 +4345,7 @@
 						<int key="objectID">802</int>
 						<reference key="object" ref="137171650"/>
 						<array class="NSMutableArray" key="children">
-							<object class="IBNSLayoutConstraint" id="889965723">
+							<object class="IBNSLayoutConstraint" id="884609444">
 								<reference key="firstItem" ref="137171650"/>
 								<int key="firstAttribute">4</int>
 								<int key="relation">0</int>
@@ -4649,7 +4649,7 @@
 								<float key="scoringTypeFloat">24</float>
 								<int key="contentType">2</int>
 							</object>
-							<object class="IBNSLayoutConstraint" id="1005162616">
+							<object class="IBNSLayoutConstraint" id="97535563">
 								<reference key="firstItem" ref="10516481"/>
 								<int key="firstAttribute">6</int>
 								<int key="relation">0</int>
@@ -4665,7 +4665,7 @@
 								<float key="scoringTypeFloat">24</float>
 								<int key="contentType">2</int>
 							</object>
-							<object class="IBNSLayoutConstraint" id="909973191">
+							<object class="IBNSLayoutConstraint" id="101904986">
 								<reference key="firstItem" ref="10516481"/>
 								<int key="firstAttribute">7</int>
 								<int key="relation">0</int>
@@ -4681,7 +4681,7 @@
 								<float key="scoringTypeFloat">40</float>
 								<int key="contentType">5</int>
 							</object>
-							<object class="IBNSLayoutConstraint" id="405678818">
+							<object class="IBNSLayoutConstraint" id="765600568">
 								<reference key="firstItem" ref="10516481"/>
 								<int key="firstAttribute">3</int>
 								<int key="relation">0</int>
@@ -5337,22 +5337,22 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1371</int>
-						<reference key="object" ref="405678818"/>
+						<reference key="object" ref="765600568"/>
 						<reference key="parent" ref="137171650"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1374</int>
-						<reference key="object" ref="909973191"/>
+						<reference key="object" ref="101904986"/>
 						<reference key="parent" ref="137171650"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1375</int>
-						<reference key="object" ref="889965723"/>
+						<reference key="object" ref="884609444"/>
 						<reference key="parent" ref="137171650"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">1376</int>
-						<reference key="object" ref="1005162616"/>
+						<reference key="object" ref="97535563"/>
 						<reference key="parent" ref="137171650"/>
 					</object>
 				</array>
@@ -5635,9 +5635,9 @@
 					<reference ref="208710131"/>
 					<reference ref="574468657"/>
 					<reference ref="675070554"/>
-					<reference ref="405678818"/>
-					<reference ref="909973191"/>
-					<reference ref="1005162616"/>
+					<reference ref="765600568"/>
+					<reference ref="101904986"/>
+					<reference ref="97535563"/>
 					<reference ref="248251110"/>
 					<reference ref="264060525"/>
 					<reference ref="429452540"/>
@@ -5656,7 +5656,7 @@
 					<reference ref="962174175"/>
 					<reference ref="558511640"/>
 					<reference ref="209590013"/>
-					<reference ref="889965723"/>
+					<reference ref="884609444"/>
 				</array>
 				<string key="802.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="81.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
