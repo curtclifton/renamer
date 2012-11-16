@@ -494,6 +494,7 @@ enum {
 {
     [self.tagsAndTItlesController clearFieldsAndRemember:YES];
     [self _removeURLFromSourceList:url];
+    [self.window makeFirstResponder:self.sourceListTableView];
 }
 
 - (void)_moveSelectionToURL:(NSURL *)destination;
