@@ -20,7 +20,8 @@
 		4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */; };
 		4DF18CAB163E06930002D0F3 /* NSArray-CCRExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */; };
 		4DF18CAD163E095B0002D0F3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4CB49716096C2800CD41B4 /* Foundation.framework */; };
-		F7E58A21163DDE7200E25112 /* DividerBar.png in Resources */ = {isa = PBXBuildFile; fileRef = F7E58A20163DDE7200E25112 /* DividerBar.png */; };
+		F7DAB1CE1658600400095322 /* DividerBar.png in Resources */ = {isa = PBXBuildFile; fileRef = F7DAB1CC1658600400095322 /* DividerBar.png */; };
+		F7DAB1CF1658600400095322 /* DividerBar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7DAB1CD1658600400095322 /* DividerBar@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,7 +49,8 @@
 		4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRSourceList.m; sourceTree = "<group>"; };
 		4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray-CCRExtensions.m"; sourceTree = "<group>"; };
 		4DF18CAC163E07040002D0F3 /* NSArray-CCRExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray-CCRExtensions.h"; sourceTree = "<group>"; };
-		F7E58A20163DDE7200E25112 /* DividerBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DividerBar.png; sourceTree = "<group>"; };
+		F7DAB1CC1658600400095322 /* DividerBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DividerBar.png; sourceTree = "<group>"; };
+		F7DAB1CD1658600400095322 /* DividerBar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "DividerBar@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,7 +140,8 @@
 		4D69CAE116477775006DCD21 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				F7E58A20163DDE7200E25112 /* DividerBar.png */,
+				F7DAB1CC1658600400095322 /* DividerBar.png */,
+				F7DAB1CD1658600400095322 /* DividerBar@2x.png */,
 				4D4CB4A716096C2800CD41B4 /* MainMenu.xib */,
 			);
 			name = UI;
@@ -199,8 +202,9 @@
 				4D4CB49D16096C2800CD41B4 /* InfoPlist.strings in Resources */,
 				4D4CB4A316096C2800CD41B4 /* Credits.rtf in Resources */,
 				4D4CB4A916096C2800CD41B4 /* MainMenu.xib in Resources */,
-				F7E58A21163DDE7200E25112 /* DividerBar.png in Resources */,
 				4D7F46DE1654BA49002EA17A /* icon.icns in Resources */,
+				F7DAB1CE1658600400095322 /* DividerBar.png in Resources */,
+				F7DAB1CF1658600400095322 /* DividerBar@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
