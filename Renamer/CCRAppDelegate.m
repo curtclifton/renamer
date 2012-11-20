@@ -30,6 +30,7 @@ enum {
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
 
+- (void)_guessValueForIncludeDayCheckbox;
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 
 - (void)_addURLsToSourceList:(NSArray *)urls;
@@ -82,6 +83,7 @@ enum {
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
+    [self _guessValueForIncludeDayCheckbox];
     [self _updateEnabledState];
 }
 
@@ -283,8 +285,17 @@ enum {
 
 #pragma mark - Private API
 
+- (void)_guessValueForIncludeDayCheckbox;
+{
+    NSString *trimmedValue = [CCRAppDelegate stringBySanitizingString:self.dayTextField.stringValue];
+    NSInteger state = [trimmedValue isEqualToString:@""] ? NSOffState : NSOnState;
+    [self.includeDayCheckbox setState:state];
+}
+
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 {
+    if (aNotification.object == self.dayTextField)
+        [self _guessValueForIncludeDayCheckbox];
     [self _updateEnabledState];
 }
 
