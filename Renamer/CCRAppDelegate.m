@@ -603,9 +603,10 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         NSError *error = nil;
         BOOL removeSucceeded = [manager removeItemAtURL:destination error:&error];
         if (!removeSucceeded) {
-            // CCC, 11/3/2012. This is crappy, but better than nothing for now.
-            // CCC, 11/3/2012. Localize.
-            NSBeginAlertSheet(@"Unable to Remove Existing File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to delete the existing file: %@", error);
+            NSString *title = NSLocalizedString(@"Unable to Remove Existing File", @"error sheet title");
+            NSString *message = NSLocalizedString(@"Sorry. An error occurred while trying to delete the existing file: %@", @"error sheet message");
+            NSString *defaultButton = NSLocalizedString(@"Drat", @"error sheet button text");
+            NSBeginAlertSheet(title, defaultButton, nil, nil, self.window, nil, NULL, NULL, NULL, message, error);
             return;
         }
     } else if ( ! ([[error domain] isEqualToString:NSCocoaErrorDomain] && [error code] == NSFileReadNoSuchFileError)) {
@@ -616,9 +617,10 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     error = nil;
     BOOL renameSucceeded = [manager moveItemAtURL:urlOfFIleToRename toURL:destination error:&error];
     if (!renameSucceeded) {
-        // CCC, 11/3/2012. This is crappy, but better than nothing for now.
-        // CCC, 11/3/2012. Localize.
-        NSBeginAlertSheet(@"Unable to Rename File", @"Drat", nil, nil, self.window, nil, NULL, NULL, NULL, @"Sorry. An error occurred while trying to rename the file: %@", error);
+        NSString *title = NSLocalizedString(@"Unable to Rename File", @"error sheet title");
+        NSString *message = NSLocalizedString(@"Sorry. An error occurred while trying to rename the file: %@", @"error sheet message");
+        NSString *defaultButton = NSLocalizedString(@"Drat", @"error sheet button text");
+        NSBeginAlertSheet(title, defaultButton, nil, nil, self.window, nil, NULL, NULL, NULL, message, error);
         return;
     }
 
