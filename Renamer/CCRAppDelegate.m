@@ -8,6 +8,7 @@
 
 #import "CCRAppDelegate.h"
 
+#import "CCRQuickLookPreviewView.h"
 #import "CCRSourceList.h"
 #import "CCRTagsAndTitlesController.h"
 #import "NSArray-CCRExtensions.h"
@@ -15,8 +16,6 @@
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
 NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
 NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmarkPreferenceKey";
-
-static const BOOL PreviewResizeRadarIsFixed = NO; // CCC, 12/2/2012. File radar.
 
 static const CGFloat MinimumSourceListWidth = 120.0;
 static const CGFloat MinimumControlsPaneWidth = 364.0;
@@ -39,7 +38,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
 @property (nonatomic, strong) QLPreviewView *quickLookPreviewView;
-@property (nonatomic) BOOL windowIsInLiveResize;
 
 - (void)_guessValueForIncludeDayCheckbox;
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -99,7 +97,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 {
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
     
-    self.quickLookPreviewView = [[QLPreviewView alloc] initWithFrame:self.previewContainerView.bounds style:QLPreviewViewStyleCompact];
+    self.quickLookPreviewView = [[CCRQuickLookPreviewView alloc] initWithFrame:self.previewContainerView.bounds style:QLPreviewViewStyleCompact];
     [self.quickLookPreviewView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
     [self.previewContainerView addSubview:self.quickLookPreviewView];
     self.quickLookPreviewView.previewItem = defaultPreviewImageURL;
@@ -171,32 +169,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     if (notification.object != self.window) // as the preview panel's delegate, we get its notifications too
         return;
     
-    if (!PreviewResizeRadarIsFixed) {
-        // CCC, 12/2/2012. Maybe we can subclass QLPreviewView and do something in the resize methods instead.
-        if (!self.windowIsInLiveResize)
-            [self.quickLookPreviewView refreshPreviewItem];
-    }
-    
     [self _maintainSplitViewSizeDuringWindowResize];
-}
-
-- (void)windowWillStartLiveResize:(NSNotification *)notification;
-{
-    if (notification.object != self.window) // as the preview panel's delegate, we get its notifications too
-        return;
-
-    self.windowIsInLiveResize = YES;
-}
-
-- (void)windowDidEndLiveResize:(NSNotification *)notification;
-{
-    if (notification.object != self.window) // as the preview panel's delegate, we get its notifications too
-        return;
-
-    self.windowIsInLiveResize = NO;
-    if (!PreviewResizeRadarIsFixed) {
-        [self.quickLookPreviewView refreshPreviewItem];
-    }
 }
 
 #pragma mark - Quick Look support

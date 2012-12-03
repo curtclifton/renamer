@@ -18,6 +18,7 @@
 		4D69CAE5164777C1006DCD21 /* CCRTagsAndTitlesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */; };
 		4D7F46DE1654BA49002EA17A /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4D7F46DD1654BA49002EA17A /* icon.icns */; };
 		4D842E18166C400900D611AF /* DefaultPreviewImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D842E17166C400900D611AF /* DefaultPreviewImage.png */; };
+		4D842E20166C43ED00D611AF /* CCRQuickLookPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D842E1F166C43ED00D611AF /* CCRQuickLookPreviewView.m */; };
 		4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */; };
 		4DF18CAB163E06930002D0F3 /* NSArray-CCRExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */; };
 		4DF18CAD163E095B0002D0F3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4CB49716096C2800CD41B4 /* Foundation.framework */; };
@@ -47,6 +48,8 @@
 		4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRTagsAndTitlesController.m; sourceTree = "<group>"; };
 		4D7F46DD1654BA49002EA17A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = icon.icns; path = Renamer/icon.icns; sourceTree = "<group>"; };
 		4D842E17166C400900D611AF /* DefaultPreviewImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DefaultPreviewImage.png; sourceTree = "<group>"; };
+		4D842E1E166C43ED00D611AF /* CCRQuickLookPreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRQuickLookPreviewView.h; sourceTree = "<group>"; };
+		4D842E1F166C43ED00D611AF /* CCRQuickLookPreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRQuickLookPreviewView.m; sourceTree = "<group>"; };
 		4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRSourceList.h; sourceTree = "<group>"; };
 		4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRSourceList.m; sourceTree = "<group>"; };
 		4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray-CCRExtensions.m"; sourceTree = "<group>"; };
@@ -112,6 +115,8 @@
 			children = (
 				4D4CB4A416096C2800CD41B4 /* CCRAppDelegate.h */,
 				4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */,
+				4D842E1E166C43ED00D611AF /* CCRQuickLookPreviewView.h */,
+				4D842E1F166C43ED00D611AF /* CCRQuickLookPreviewView.m */,
 				4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */,
 				4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */,
 				4D69CAD616476E2B006DCD21 /* CCRSourceListTableView.h */,
@@ -225,6 +230,7 @@
 				4DF18CAB163E06930002D0F3 /* NSArray-CCRExtensions.m in Sources */,
 				4D69CAD816476E2B006DCD21 /* CCRSourceListTableView.m in Sources */,
 				4D69CAE5164777C1006DCD21 /* CCRTagsAndTitlesController.m in Sources */,
+				4D842E20166C43ED00D611AF /* CCRQuickLookPreviewView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
