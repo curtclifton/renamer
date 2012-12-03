@@ -18,6 +18,9 @@ NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmark
 
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
+
+static NSInteger SoLastCentury = 69;
+
 static NSAttributedString *shortSeparator;
 static NSAttributedString *longSeparator;
 static NSAttributedString *extensionSeparator;
@@ -458,9 +461,9 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         NSMutableAttributedString *computedName = [[NSMutableAttributedString alloc] initWithString:@""];
 
         fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.yearTextField minimum:1 maximum:9999 attributedString:computedName errorString:@"yyyy" transform:^NSInteger(NSInteger inputValue) {
-            if (69 <= inputValue && inputValue < 100) // CCC, 12/2/2012. Make 69 a constant
+            if (SoLastCentury <= inputValue && inputValue < 100)
                 return 1900 + inputValue;
-            else if (0 <= inputValue && inputValue < 69)
+            else if (0 <= inputValue && inputValue < SoLastCentury)
                 return 2000 + inputValue;
             else
                 return inputValue;
