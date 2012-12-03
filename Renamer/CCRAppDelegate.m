@@ -45,12 +45,13 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 - (void)_addURLsToSourceList:(NSArray *)urls;
 - (NSURL *)_selectedFileURLOrNil;
 
+- (void)_maintainSplitViewSizeDuringWindowResize;
+
 - (NSURL *)_directoryForPreferenceKey:(NSString *)preferenceKey;
 - (void)_setDirectory:(NSURL *)updatedURL forPreferenceKey:(NSString *)preferenceKey previousDirectory:(NSURL *)previousURL;
 
 - (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString transform:(DecimalValueTransformer) transformer;
 
-- (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
 - (void)_moveSelectionToURL:(NSURL *)destination;
 @end
@@ -92,7 +93,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification;
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
     
     self.quickLookPreviewView = [[QLPreviewView alloc] initWithFrame:self.previewContainerView.bounds style:QLPreviewViewStyleCompact];
@@ -169,9 +169,12 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         return;
     
     if (!PreviewResizeRadarIsFixed) {
+        // CCC, 12/2/2012. Maybe we can subclass QLPreviewView and do something in the resize methods instead.
         if (!self.windowIsInLiveResize)
             [self.quickLookPreviewView refreshPreviewItem];
     }
+    
+    [self _maintainSplitViewSizeDuringWindowResize];
 }
 
 - (void)windowWillStartLiveResize:(NSNotification *)notification;
@@ -389,7 +392,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     return [self.sourceList urlForRow:self.sourceListTableView.selectedRow];
 }
 
-- (void)_windowDidResize:(NSNotification *)notification;
+- (void)_maintainSplitViewSizeDuringWindowResize;
 {
     NSSize sourceListSize = self.sourceListContainerView.frame.size;
     NSSize controlsPaneSize = self.controlsPaneContainerView.frame.size;
