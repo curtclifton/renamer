@@ -90,6 +90,13 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
+    
+    // CCC, 12/2/2012. Set up preview view inside the container:
+    CALayer *redLayer = [CALayer layer];
+    [redLayer setBackgroundColor:[NSColor redColor].CGColor];
+    [self.previewContainerView setLayer:redLayer];
+    [self.previewContainerView setWantsLayer:YES];
+    
     [self _guessValueForIncludeDayCheckbox];
     [self _updateEnabledState];
 }

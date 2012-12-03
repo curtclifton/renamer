@@ -31,6 +31,7 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 @property (weak) IBOutlet NSSplitView *splitView;
 @property (weak) IBOutlet NSView *sourceListContainerView;
 @property (weak) IBOutlet NSView *controlsPaneContainerView;
+@property (weak) IBOutlet NSView *previewContainerView;
 @property (weak) IBOutlet CCRTagsAndTitlesController *tagsAndTItlesController;
 @property (weak) IBOutlet NSButton *renameAndFileButton;
 @property (weak) IBOutlet NSTextField *computedNameTextField;
