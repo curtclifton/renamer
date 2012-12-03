@@ -34,6 +34,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
+@property (nonatomic, strong) QLPreviewView *quickLookPreviewView;
 
 - (void)_guessValueForIncludeDayCheckbox;
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -92,10 +93,9 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
     
     // CCC, 12/2/2012. Set up preview view inside the container:
-    CALayer *redLayer = [CALayer layer];
-    [redLayer setBackgroundColor:[NSColor redColor].CGColor];
-    [self.previewContainerView setLayer:redLayer];
-    [self.previewContainerView setWantsLayer:YES];
+    self.quickLookPreviewView = [[QLPreviewView alloc] initWithFrame:self.previewContainerView.bounds style:QLPreviewViewStyleCompact];
+    [self.previewContainerView addSubview:self.quickLookPreviewView];
+    // CCC, 12/2/2012. Set a default previewItem in the view.
     
     [self _guessValueForIncludeDayCheckbox];
     [self _updateEnabledState];
@@ -140,6 +140,16 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification;
 {
+    NSAssert(notification.object == self.sourceListTableView, @"Expected source list table view, got %@", notification.object);
+    
+    NSURL *selectedURL = [self _selectedFileURLOrNil];
+    if (selectedURL == nil) {
+        // CCC, 12/2/2012. Set default preview image.
+        self.quickLookPreviewView.previewItem = nil;
+    } else {
+        self.quickLookPreviewView.previewItem = selectedURL;
+    }
+    
     [self _updateEnabledState];
 }
 
@@ -169,6 +179,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     self.quickLookPreviewPanel = nil;
 }
 
+// CCC, 12/2/2012. Do you want to lose the preview panel once in-pane preview works? Or perhaps it's good to have both to get the other nicities that the panel delivers (like Open in Preview, a bigger window, paging)?
 #pragma mark QLPreviewPanelDataSource
 
 - (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel;
