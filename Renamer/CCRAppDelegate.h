@@ -21,8 +21,6 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 
 // bindings
 @property (nonatomic) BOOL enableControls;
-// CCC, 11/11/2012. Delete if you decide to remove the UI for showing this:
-@property (nonatomic, strong) NSURL *destinationDirectory;
 
 // main app window
 @property (assign) IBOutlet NSWindow *window;
