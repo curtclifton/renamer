@@ -400,8 +400,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     if (sourceListSize.width >= MinimumSourceListWidth && controlsPaneSize.width >= MinimumControlsPaneWidth)
         return;
     
-    NSAssert(!(sourceListSize.width < MinimumSourceListWidth && controlsPaneSize.width < MinimumControlsPaneWidth), @"Don't expect resizing to be able to make both subviews of the split view smaller than their minimum sizes simultaneously. Minimum window size in the nib should be at least the sum of the minimum widths set in source code.");
-    
     if (sourceListSize.width < MinimumSourceListWidth) {
         sourceListSize.width = MAX(sourceListSize.width, MinimumSourceListWidth);
         controlsPaneSize.width = self.window.frame.size.width - sourceListSize.width;
