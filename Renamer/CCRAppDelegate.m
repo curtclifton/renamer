@@ -16,6 +16,8 @@ NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionary
 NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
 NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmarkPreferenceKey";
 
+static const BOOL PreviewResizeRadarIsFixed = NO; // CCC, 12/2/2012. File radar.
+
 static CGFloat MinimumSourceListWidth = 120.0;
 static CGFloat MinimumControlsPaneWidth = 364.0;
 
@@ -35,6 +37,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
 @property (nonatomic, strong) QLPreviewView *quickLookPreviewView;
+@property (nonatomic) BOOL windowIsInLiveResize;
 
 - (void)_guessValueForIncludeDayCheckbox;
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -156,6 +159,38 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 - (NSString *)tableView:(NSTableView *)tableView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row mouseLocation:(NSPoint)mouseLocation;
 {
     return [[self.sourceList urlForRow:row] path];
+}
+
+#pragma mark NSWindowDelegate
+
+- (void)windowDidResize:(NSNotification *)notification;
+{
+    if (notification.object != self.window) // as the preview panel's delegate, we get its notifications too
+        return;
+    
+    if (!PreviewResizeRadarIsFixed) {
+        if (!self.windowIsInLiveResize)
+            [self.quickLookPreviewView refreshPreviewItem];
+    }
+}
+
+- (void)windowWillStartLiveResize:(NSNotification *)notification;
+{
+    if (notification.object != self.window) // as the preview panel's delegate, we get its notifications too
+        return;
+
+    self.windowIsInLiveResize = YES;
+}
+
+- (void)windowDidEndLiveResize:(NSNotification *)notification;
+{
+    if (notification.object != self.window) // as the preview panel's delegate, we get its notifications too
+        return;
+
+    self.windowIsInLiveResize = NO;
+    if (!PreviewResizeRadarIsFixed) {
+        [self.quickLookPreviewView refreshPreviewItem];
+    }
 }
 
 #pragma mark - Quick Look support

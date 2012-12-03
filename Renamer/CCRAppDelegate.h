@@ -14,7 +14,7 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 
 @class CCRSourceList, CCRTagsAndTitlesController;
 
-@interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSComboBoxDelegate, NSSplitViewDelegate, NSTableViewDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>
+@interface CCRAppDelegate : NSObject <NSApplicationDelegate, NSComboBoxDelegate, NSSplitViewDelegate, NSTableViewDelegate, NSWindowDelegate, QLPreviewPanelDataSource, QLPreviewPanelDelegate>
 
 // class methods
 + (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
