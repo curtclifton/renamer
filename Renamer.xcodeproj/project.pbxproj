@@ -17,6 +17,7 @@
 		4D69CAD816476E2B006DCD21 /* CCRSourceListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D69CAD716476E2B006DCD21 /* CCRSourceListTableView.m */; };
 		4D69CAE5164777C1006DCD21 /* CCRTagsAndTitlesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */; };
 		4D7F46DE1654BA49002EA17A /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4D7F46DD1654BA49002EA17A /* icon.icns */; };
+		4D842E18166C400900D611AF /* DefaultPreviewImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D842E17166C400900D611AF /* DefaultPreviewImage.png */; };
 		4DF18CA7163DF0F10002D0F3 /* CCRSourceList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */; };
 		4DF18CAB163E06930002D0F3 /* NSArray-CCRExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */; };
 		4DF18CAD163E095B0002D0F3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4CB49716096C2800CD41B4 /* Foundation.framework */; };
@@ -45,6 +46,7 @@
 		4D69CAE3164777C1006DCD21 /* CCRTagsAndTitlesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRTagsAndTitlesController.h; sourceTree = "<group>"; };
 		4D69CAE4164777C1006DCD21 /* CCRTagsAndTitlesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRTagsAndTitlesController.m; sourceTree = "<group>"; };
 		4D7F46DD1654BA49002EA17A /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = icon.icns; path = Renamer/icon.icns; sourceTree = "<group>"; };
+		4D842E17166C400900D611AF /* DefaultPreviewImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DefaultPreviewImage.png; sourceTree = "<group>"; };
 		4DF18CA5163DF0F10002D0F3 /* CCRSourceList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRSourceList.h; sourceTree = "<group>"; };
 		4DF18CA6163DF0F10002D0F3 /* CCRSourceList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRSourceList.m; sourceTree = "<group>"; };
 		4DF18CAA163E06930002D0F3 /* NSArray-CCRExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray-CCRExtensions.m"; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 		4D69CAE116477775006DCD21 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				4D842E17166C400900D611AF /* DefaultPreviewImage.png */,
 				F7DAB1CC1658600400095322 /* DividerBar.png */,
 				F7DAB1CD1658600400095322 /* DividerBar@2x.png */,
 				4D4CB4A716096C2800CD41B4 /* MainMenu.xib */,
@@ -205,6 +208,7 @@
 				4D7F46DE1654BA49002EA17A /* icon.icns in Resources */,
 				F7DAB1CE1658600400095322 /* DividerBar.png in Resources */,
 				F7DAB1CF1658600400095322 /* DividerBar@2x.png in Resources */,
+				4D842E18166C400900D611AF /* DefaultPreviewImage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

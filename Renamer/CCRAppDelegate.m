@@ -27,6 +27,8 @@ static NSAttributedString *shortSeparator;
 static NSAttributedString *longSeparator;
 static NSAttributedString *extensionSeparator;
 
+static NSURL *defaultPreviewImageURL;
+
 enum {
     CCRReplacementConfirmationCancel,
     CCRReplacementConfirmationReplace,
@@ -63,6 +65,8 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     shortSeparator = [[NSAttributedString alloc] initWithString:@"-"];
     longSeparator = [[NSAttributedString alloc] initWithString:@" - "];
     extensionSeparator = [[NSAttributedString alloc] initWithString:@"."];
+    
+    defaultPreviewImageURL = [[NSBundle mainBundle] URLForImageResource:@"DefaultPreviewImage"];
 }
 
 + (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
@@ -98,7 +102,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     self.quickLookPreviewView = [[QLPreviewView alloc] initWithFrame:self.previewContainerView.bounds style:QLPreviewViewStyleCompact];
     [self.quickLookPreviewView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
     [self.previewContainerView addSubview:self.quickLookPreviewView];
-    // CCC, 12/2/2012. Set a default previewItem in the view.
+    self.quickLookPreviewView.previewItem = defaultPreviewImageURL;
     
     [self _guessValueForIncludeDayCheckbox];
     [self _updateEnabledState];
@@ -147,8 +151,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     
     NSURL *selectedURL = [self _selectedFileURLOrNil];
     if (selectedURL == nil) {
-        // CCC, 12/2/2012. Set default preview image.
-        self.quickLookPreviewView.previewItem = nil;
+        self.quickLookPreviewView.previewItem = defaultPreviewImageURL;
     } else {
         self.quickLookPreviewView.previewItem = selectedURL;
     }
@@ -217,7 +220,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     self.quickLookPreviewPanel = nil;
 }
 
-// CCC, 12/2/2012. Do you want to lose the preview panel once in-pane preview works? Or perhaps it's good to have both to get the other nicities that the panel delivers (like Open in Preview, a bigger window, paging)?
 #pragma mark QLPreviewPanelDataSource
 
 - (NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel *)panel;
