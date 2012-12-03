@@ -18,10 +18,10 @@ NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmark
 
 static const BOOL PreviewResizeRadarIsFixed = NO; // CCC, 12/2/2012. File radar.
 
-static CGFloat MinimumSourceListWidth = 120.0;
-static CGFloat MinimumControlsPaneWidth = 364.0;
+static const CGFloat MinimumSourceListWidth = 120.0;
+static const CGFloat MinimumControlsPaneWidth = 364.0;
 
-static NSInteger SoLastCentury = 69;
+static const NSInteger SoLastCentury = 69;
 
 static NSAttributedString *shortSeparator;
 static NSAttributedString *longSeparator;
@@ -400,7 +400,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     if (sourceListSize.width >= MinimumSourceListWidth && controlsPaneSize.width >= MinimumControlsPaneWidth)
         return;
     
-    NSAssert(!(sourceListSize.width < MinimumSourceListWidth && controlsPaneSize.width < MinimumControlsPaneWidth), @"Don't expect resizing to be able to make both subviews of the split view smaller than their minimum sizes simultaneously. Minimum window size in the nib should be at least the some of the minimum widths set in source code.");
+    NSAssert(!(sourceListSize.width < MinimumSourceListWidth && controlsPaneSize.width < MinimumControlsPaneWidth), @"Don't expect resizing to be able to make both subviews of the split view smaller than their minimum sizes simultaneously. Minimum window size in the nib should be at least the sum of the minimum widths set in source code.");
     
     if (sourceListSize.width < MinimumSourceListWidth) {
         sourceListSize.width = MAX(sourceListSize.width, MinimumSourceListWidth);
