@@ -92,8 +92,8 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_windowDidResize:) name:NSWindowDidResizeNotification object:self.window];
     [self.sourceListTableView registerForDraggedTypes:@[NSFilenamesPboardType]];
     
-    // CCC, 12/2/2012. Set up preview view inside the container:
     self.quickLookPreviewView = [[QLPreviewView alloc] initWithFrame:self.previewContainerView.bounds style:QLPreviewViewStyleCompact];
+    [self.quickLookPreviewView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
     [self.previewContainerView addSubview:self.quickLookPreviewView];
     // CCC, 12/2/2012. Set a default previewItem in the view.
     
