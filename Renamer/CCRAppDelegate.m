@@ -27,6 +27,8 @@ enum {
     CCRReplacementConfirmationReplace,
 };
 
+typedef NSInteger(^DecimalValueTransformer)(NSInteger);
+
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
 
@@ -38,6 +40,8 @@ enum {
 
 - (NSURL *)_directoryForPreferenceKey:(NSString *)preferenceKey;
 - (void)_setDirectory:(NSURL *)updatedURL forPreferenceKey:(NSString *)preferenceKey previousDirectory:(NSURL *)previousURL;
+
+- (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString transform:(DecimalValueTransformer) transformer;
 
 - (void)_windowDidResize:(NSNotification *)notification;
 - (void)_updateEnabledState;
@@ -388,9 +392,13 @@ enum {
     }
 }
 
-- (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString;
+- (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString transform:(DecimalValueTransformer) transformer;
 {
     NSInteger value = [textField integerValue];
+    BOOL fieldIsEmpty = [[CCRAppDelegate stringBySanitizingString:[textField stringValue]] length] == 0;
+    if (transformer != NULL && !fieldIsEmpty)
+        value = transformer(value);
+    
     NSAttributedString *stringToAppend;
     BOOL valid;
     if (value < minValue || value > maxValue) {
@@ -449,15 +457,22 @@ enum {
     if (self.enableControls) {
         NSMutableAttributedString *computedName = [[NSMutableAttributedString alloc] initWithString:@""];
 
-        fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.yearTextField minimum:1 maximum:9999 attributedString:computedName errorString:@"yyyy"] && fieldsValid;
+        fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.yearTextField minimum:1 maximum:9999 attributedString:computedName errorString:@"yyyy" transform:^NSInteger(NSInteger inputValue) {
+            if (69 <= inputValue && inputValue < 100) // CCC, 12/2/2012. Make 69 a constant
+                return 1900 + inputValue;
+            else if (0 <= inputValue && inputValue < 69)
+                return 2000 + inputValue;
+            else
+                return inputValue;
+        }] && fieldsValid;
         [computedName appendAttributedString:shortSeparator];
-        fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.monthTextField minimum:1 maximum:12 attributedString:computedName errorString:@"mm"] && fieldsValid;
+        fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.monthTextField minimum:1 maximum:12 attributedString:computedName errorString:@"mm" transform:NULL] && fieldsValid;
         
         if (self.includeDayCheckbox.state == NSOnState) {
             [computedName appendAttributedString:shortSeparator];
             
             NSInteger daysInMonth = fieldsValid ? [self _daysInMonth] : 31;
-            fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.dayTextField minimum:1 maximum:daysInMonth attributedString:computedName errorString:@"dd"] && fieldsValid;
+            fieldsValid = [self _validateAndAppendDecimalTextFieldValue:self.dayTextField minimum:1 maximum:daysInMonth attributedString:computedName errorString:@"dd" transform:NULL] && fieldsValid;
         }
         
         [computedName appendAttributedString:longSeparator];
