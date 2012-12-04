@@ -10,6 +10,7 @@
 
 @implementation CCRQuickLookPreviewView
 
+// This is a work-around for Radar 12794367:
 - (void)updateConstraints;
 {
     NSView *subview = self.subviews[0];
