@@ -10,11 +10,19 @@
 
 @implementation CCRQuickLookPreviewView
 
-- (void)resizeWithOldSuperviewSize:(NSSize)oldSize;
+- (void)updateConstraints;
 {
-    [super resizeWithOldSuperviewSize:oldSize];
     NSView *subview = self.subviews[0];
-    [subview setFrameSize:self.frame.size];
+    
+    [subview setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [super updateConstraints];
+    
+    NSString *horizontalHuggingConstraints = @"H:|-(0)-[view]-(0)-|";
+    NSString *verticalHuggingConstraints = @"V:|-(0)-[view]-(0)-|";
+    
+    // Make subview fit to us:
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:horizontalHuggingConstraints options:0 metrics:nil views:@{@"view":subview}]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:verticalHuggingConstraints options:0 metrics:nil views:@{@"view":subview}]];
 }
 
 @end
