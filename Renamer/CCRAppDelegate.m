@@ -226,6 +226,10 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 #pragma mark Main Window
 
+// CCC, 12/4/2012. Add 'Rename "File"…' menu item.
+// CCC, 12/4/2012. Add 'Remove "File"' menu item.
+// CCC, 12/4/2012. Add 'Quick Look "File"' menu item
+
 - (IBAction)renameAndFile:(id)sender;
 {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
