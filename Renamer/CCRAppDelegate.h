@@ -45,6 +45,7 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 - (IBAction)open:(id)sender;
 - (IBAction)quicklook:(id)sender;
 - (IBAction)includeDayChanged:(id)sender;
+- (IBAction)removeFromList:(id)sender;
 
 // other API
 - (void)quickLookSelection;

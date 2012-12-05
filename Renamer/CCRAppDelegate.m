@@ -296,6 +296,10 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [self _updateEnabledState];
 }
 
+- (IBAction)removeFromList:(id)sender {
+    [self removeSelectedItem];
+}
+
 #pragma mark Other Public API
 - (void)quickLookSelection;
 {
