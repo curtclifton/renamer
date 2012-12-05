@@ -13,8 +13,6 @@
 #import "CCRTagsAndTitlesController.h"
 #import "NSArray-CCRExtensions.h"
 
-#import <objc/runtime.h>
-
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
 NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
 NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmarkPreferenceKey";
@@ -30,7 +28,7 @@ static NSAttributedString *extensionSeparator;
 
 static NSURL *defaultPreviewImageURL;
 
-static NSDictionary *actionValidatorMap;
+static NSDictionary *menuItemTitles;
 
 enum {
     CCRReplacementConfirmationCancel,
@@ -39,9 +37,26 @@ enum {
 
 typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
+@interface MenuItemTitles : NSObject
++ (MenuItemTitles *)menuItemTitlesWithDisabledTitle:(NSString *)title enabledFormat:(NSString *)format;
+@property (nonatomic) NSString *disabledTitle;
+@property (nonatomic) NSString *enabledFormat;
+@end
+
+@implementation MenuItemTitles
++ (MenuItemTitles *)menuItemTitlesWithDisabledTitle:(NSString *)title enabledFormat:(NSString *)format;
+{
+    MenuItemTitles *result = [[MenuItemTitles alloc] init];
+    result->_disabledTitle = title;
+    result->_enabledFormat = format;
+    return result;
+}
+@end
+
 @interface CCRAppDelegate ()
 @property (nonatomic, strong) QLPreviewPanel *quickLookPreviewPanel;
 @property (nonatomic, strong) QLPreviewView *quickLookPreviewView;
+@property (nonatomic) BOOL fieldValuesAreValid;
 
 - (void)_guessValueForIncludeDayCheckbox;
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -70,7 +85,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     
     defaultPreviewImageURL = [[NSBundle mainBundle] URLForImageResource:@"DefaultPreviewImage"];
     
-    actionValidatorMap = @{@"quicklook:" : @"validateQuickLookMenuItem:", @"renameAndFile:" : @"validateRenameAndFileMenuItem:", @"removeFromList:" : @"validateRemoveFromListMenuItem:"};
+    menuItemTitles = @{@"quicklook:" : [MenuItemTitles menuItemTitlesWithDisabledTitle:@"Quick Look" enabledFormat:@"Quick Look “%@”"], @"renameAndFile:" : [MenuItemTitles menuItemTitlesWithDisabledTitle:@"Rename and File…" enabledFormat:@"Rename “%@” and File…" ], @"removeFromList:" : [MenuItemTitles menuItemTitlesWithDisabledTitle:@"Remove from List" enabledFormat:@"Remove “%@” from List"]};
 }
 
 + (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
@@ -233,20 +248,21 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
 {
     SEL action = [menuItem action];
-    NSString *validateSelectorString = actionValidatorMap[NSStringFromSelector(action)];
-    if (validateSelectorString != nil) {
-        SEL validateSelector = NSSelectorFromString(validateSelectorString);
-        Method validatorMethod = class_getInstanceMethod([self class], validateSelector);
-        if (!validatorMethod) {
-            NSLog(@"validator method not implemented: %@", validateSelectorString);
-            return NO;
+    MenuItemTitles *titles = menuItemTitles[NSStringFromSelector(action)];
+    if (titles != nil) {
+        NSURL *selectedFile = [self _selectedFileURLOrNil];
+        
+        NSString *menuText;
+        if (selectedFile == nil) {
+            menuText = NSLocalizedString(titles.disabledTitle, @"menu item title");
+        } else {
+            NSString *formatString = NSLocalizedString(titles.enabledFormat, @"menu item title");
+            menuText = [NSString stringWithFormat:formatString, [selectedFile lastPathComponent]];
         }
         
-        IMP validatorImplementation = method_getImplementation(validatorMethod);
-        BOOL (*validator)(id self, SEL selector, id sender) = (typeof(validator))validatorImplementation;
-        return validator(self, validateSelector, menuItem);
+        [menuItem setTitle:menuText];
+        return self.enableControls && (action != @selector(renameAndFile:) || self.fieldValuesAreValid);
     }
-    
     return YES;
 }
 
@@ -283,12 +299,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     }];
 }
 
-- (BOOL)validateRenameAndFileMenuItem:(NSMenuItem *)menuItem;
-{
-    // CCC, 12/4/2012. Set menu item title if enabled: Rename and File "File"…
-    return [self _selectedFileURLOrNil] != nil;
-}
-
 - (IBAction)open:(id)sender;
 {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
@@ -321,12 +331,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [self quickLookSelection];
 }
 
-- (BOOL)validateQuickLookMenuItem:(NSMenuItem *)menuItem;
-{
-    // CCC, 12/4/2012. Set menu item title if enabled: Quick Look "File"
-    return [self _selectedFileURLOrNil] != nil;
-}
-
 - (IBAction)includeDayChanged:(id)sender;
 {
     [self _updateEnabledState];
@@ -334,12 +338,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (IBAction)removeFromList:(id)sender {
     [self removeSelectedItem];
-}
-
-- (BOOL)validateRemoveFromListMenuItem:(NSMenuItem *)menuItem;
-{
-    // CCC, 12/4/2012. Set menu item title if enabled: Remove "File" from List
-    return [self _selectedFileURLOrNil] != nil;
 }
 
 #pragma mark Other Public API
@@ -578,8 +576,8 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         [self.computedNameTextField setStringValue:@""];
     }
     
+    self.fieldValuesAreValid = fieldsValid;
     [self.renameAndFileButton setEnabled:self.enableControls && fieldsValid];
-
 }
 
 - (void)_removeURLFromSourceList:(NSURL *)url;

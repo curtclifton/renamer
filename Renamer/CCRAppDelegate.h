@@ -42,13 +42,10 @@ extern NSString *CCRSourceBookmarksRestorationCoderKey;
 @property (weak) IBOutlet NSComboBox *titleComboBox;
 
 - (IBAction)renameAndFile:(id)sender;
-- (BOOL)validateRenameAndFileMenuItem:(NSMenuItem *)menuItem;
 - (IBAction)open:(id)sender;
 - (IBAction)quicklook:(id)sender;
-- (BOOL)validateQuickLookMenuItem:(NSMenuItem *)menuItem;
 - (IBAction)includeDayChanged:(id)sender;
 - (IBAction)removeFromList:(id)sender;
-- (BOOL)validateRemoveFromListMenuItem:(NSMenuItem *)menuItem;
 
 // other API
 - (void)quickLookSelection;
