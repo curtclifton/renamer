@@ -13,6 +13,8 @@
 #import "CCRTagsAndTitlesController.h"
 #import "NSArray-CCRExtensions.h"
 
+#import <objc/runtime.h>
+
 NSString *CCRTagsAndTitlesDictionaryPreferenceKey = @"CCRTagsAndTitlesDictionaryPreferenceKey";
 NSString *CCRDestinationDirectoryBookmarkPreferenceKey = @"CCRDestinationDirectoryBookmarkPreferenceKey";
 NSString *CCRSourceDirectoryBookmarkPreferenceKey = @"CCRSoruceDirectoryBookmarkPreferenceKey";
@@ -27,6 +29,8 @@ static NSAttributedString *longSeparator;
 static NSAttributedString *extensionSeparator;
 
 static NSURL *defaultPreviewImageURL;
+
+static NSDictionary *actionValidatorMap;
 
 enum {
     CCRReplacementConfirmationCancel,
@@ -65,6 +69,8 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     extensionSeparator = [[NSAttributedString alloc] initWithString:@"."];
     
     defaultPreviewImageURL = [[NSBundle mainBundle] URLForImageResource:@"DefaultPreviewImage"];
+    
+    actionValidatorMap = @{@"quicklook:" : @"validateQuickLookMenuItem:", @"renameAndFile:" : @"validateRenameAndFileMenuItem:", @"removeFromList:" : @"validateRemoveFromListMenuItem:"};
 }
 
 + (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
@@ -222,13 +228,31 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     return [self.window convertRectToScreen:selectionRect];
 }
 
-#pragma mark - Actions
+#pragma mark - NSUserInterfaceValidation
 
-#pragma mark Main Window
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
+{
+    SEL action = [menuItem action];
+    NSString *validateSelectorString = actionValidatorMap[NSStringFromSelector(action)];
+    if (validateSelectorString != nil) {
+        SEL validateSelector = NSSelectorFromString(validateSelectorString);
+        Method validatorMethod = class_getInstanceMethod([self class], validateSelector);
+        if (!validatorMethod) {
+            NSLog(@"validator method not implemented: %@", validateSelectorString);
+            return NO;
+        }
+        
+        IMP validatorImplementation = method_getImplementation(validatorMethod);
+        BOOL (*validator)(id self, SEL selector, id sender) = (typeof(validator))validatorImplementation;
+        return validator(self, validateSelector, menuItem);
+    }
+    
+    return YES;
+}
 
-// CCC, 12/4/2012. Add 'Rename "File"…' menu item.
-// CCC, 12/4/2012. Add 'Remove "File"' menu item.
-// CCC, 12/4/2012. Add 'Quick Look "File"' menu item
+#pragma mark - Public API
+
+#pragma mark Actions
 
 - (IBAction)renameAndFile:(id)sender;
 {
@@ -257,6 +281,11 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         
         [self _moveSelectionToURL:destination];
     }];
+}
+
+- (BOOL)validateRenameAndFileMenuItem:(NSMenuItem *)menuItem;
+{
+    return [self _selectedFileURLOrNil] != nil;
 }
 
 - (IBAction)open:(id)sender;
@@ -291,6 +320,11 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [self quickLookSelection];
 }
 
+- (BOOL)validateQuickLookMenuItem:(NSMenuItem *)menuItem;
+{
+    return [self _selectedFileURLOrNil] != nil;
+}
+
 - (IBAction)includeDayChanged:(id)sender;
 {
     [self _updateEnabledState];
@@ -298,6 +332,11 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (IBAction)removeFromList:(id)sender {
     [self removeSelectedItem];
+}
+
+- (BOOL)validateRemoveFromListMenuItem:(NSMenuItem *)menuItem;
+{
+    return [self _selectedFileURLOrNil] != nil;
 }
 
 #pragma mark Other Public API
