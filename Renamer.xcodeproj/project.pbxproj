@@ -10,7 +10,6 @@
 		4D4CB49316096C2800CD41B4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4CB49216096C2800CD41B4 /* Cocoa.framework */; };
 		4D4CB49D16096C2800CD41B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CB49B16096C2800CD41B4 /* InfoPlist.strings */; };
 		4D4CB49F16096C2800CD41B4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4CB49E16096C2800CD41B4 /* main.m */; };
-		4D4CB4A316096C2800CD41B4 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A116096C2800CD41B4 /* Credits.rtf */; };
 		4D4CB4A616096C2800CD41B4 /* CCRAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A516096C2800CD41B4 /* CCRAppDelegate.m */; };
 		4D4CB4A916096C2800CD41B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D4CB4A716096C2800CD41B4 /* MainMenu.xib */; };
 		4D69CAD3164767F9006DCD21 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D69CAD2164767F9006DCD21 /* Quartz.framework */; };
@@ -208,7 +207,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D4CB49D16096C2800CD41B4 /* InfoPlist.strings in Resources */,
-				4D4CB4A316096C2800CD41B4 /* Credits.rtf in Resources */,
 				4D4CB4A916096C2800CD41B4 /* MainMenu.xib in Resources */,
 				4D7F46DE1654BA49002EA17A /* icon.icns in Resources */,
 				F7DAB1CE1658600400095322 /* DividerBar.png in Resources */,
