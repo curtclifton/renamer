@@ -285,6 +285,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (BOOL)validateRenameAndFileMenuItem:(NSMenuItem *)menuItem;
 {
+    // CCC, 12/4/2012. Set menu item title if enabled: Rename and File "File"…
     return [self _selectedFileURLOrNil] != nil;
 }
 
@@ -322,6 +323,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (BOOL)validateQuickLookMenuItem:(NSMenuItem *)menuItem;
 {
+    // CCC, 12/4/2012. Set menu item title if enabled: Quick Look "File"
     return [self _selectedFileURLOrNil] != nil;
 }
 
@@ -336,6 +338,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 
 - (BOOL)validateRemoveFromListMenuItem:(NSMenuItem *)menuItem;
 {
+    // CCC, 12/4/2012. Set menu item title if enabled: Remove "File" from List
     return [self _selectedFileURLOrNil] != nil;
 }
 
