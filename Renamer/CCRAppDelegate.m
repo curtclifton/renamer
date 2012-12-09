@@ -69,6 +69,8 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 - (NSURL *)_directoryForPreferenceKey:(NSString *)preferenceKey;
 - (void)_setDirectory:(NSURL *)updatedURL forPreferenceKey:(NSString *)preferenceKey previousDirectory:(NSURL *)previousURL;
 
+- (void)_updatePreviewViewItem;
+
 - (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString transform:(DecimalValueTransformer) transformer;
 
 - (void)_updateEnabledState;
@@ -168,12 +170,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
 {
     NSAssert(notification.object == self.sourceListTableView, @"Expected source list table view, got %@", notification.object);
     
-    NSURL *selectedURL = [self _selectedFileURLOrNil];
-    if (selectedURL == nil) {
-        self.quickLookPreviewView.previewItem = defaultPreviewImageURL;
-    } else {
-        self.quickLookPreviewView.previewItem = selectedURL;
-    }
+    [self _updatePreviewViewItem];
     
     [self _updateEnabledState];
 }
@@ -472,6 +469,16 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     }
 }
 
+- (void)_updatePreviewViewItem;
+{
+    NSURL *selectedURL = [self _selectedFileURLOrNil];
+    if (selectedURL == nil) {
+        self.quickLookPreviewView.previewItem = defaultPreviewImageURL;
+    } else {
+        self.quickLookPreviewView.previewItem = selectedURL;
+    }
+}
+
 - (BOOL)_validateAndAppendDecimalTextFieldValue:(NSTextField *)textField minimum:(NSInteger)minValue maximum:(NSInteger)maxValue attributedString:(NSMutableAttributedString *)string errorString:(NSString *)errorString transform:(DecimalValueTransformer) transformer;
 {
     NSInteger value = [textField integerValue];
@@ -601,6 +608,8 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [self.tagsAndTItlesController clearFieldsAndRemember:YES];
     [self _removeURLFromSourceList:url];
     [self.window makeFirstResponder:self.sourceListTableView];
+    [self _updatePreviewViewItem];
+    [self _updateEnabledState];
 }
 
 - (void)_moveSelectionToURL:(NSURL *)destination;
