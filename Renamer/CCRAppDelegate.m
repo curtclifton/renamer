@@ -601,6 +601,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         NSIndexSet *selectionIndexSet = [NSIndexSet indexSetWithIndex:self.sourceListTableView.numberOfRows - 1];
         [self.sourceListTableView selectRowIndexes:selectionIndexSet byExtendingSelection:NO];
     }
+    [self _updatePreviewViewItem];
 }
 
 - (void)_renameCompletedForURL:(NSURL *)url;
@@ -608,7 +609,6 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [self.tagsAndTItlesController clearFieldsAndRemember:YES];
     [self _removeURLFromSourceList:url];
     [self.window makeFirstResponder:self.sourceListTableView];
-    [self _updatePreviewViewItem];
     [self _updateEnabledState];
 }
 
