@@ -183,6 +183,12 @@
 				CLASSPREFIX = CCR;
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Curt Clifton";
+				TargetAttributes = {
+					4D4CB48D16096C2800CD41B4 = {
+						DevelopmentTeam = H7G98VUF4H;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 4D4CB48816096C2800CD41B4 /* Build configuration list for PBXProject "Renamer" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -319,11 +325,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Renamer/Renamer.entitlements;
-				CODE_SIGN_IDENTITY = "Curt Clifton";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = H7G98VUF4H;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Renamer/Renamer-Prefix.pch";
 				INFOPLIST_FILE = "Renamer/Renamer-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -334,11 +342,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Renamer/Renamer.entitlements;
-				CODE_SIGN_IDENTITY = "Curt Clifton";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = H7G98VUF4H;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Renamer/Renamer-Prefix.pch";
 				INFOPLIST_FILE = "Renamer/Renamer-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
