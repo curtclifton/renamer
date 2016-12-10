@@ -67,7 +67,7 @@
     NSPasteboard *draggingPasteboard = [info draggingPasteboard];
     if ([[draggingPasteboard types] containsObject:NSFilenamesPboardType]) {
         NSArray *paths = [draggingPasteboard propertyListForType:NSFilenamesPboardType];
-        [[NSApp delegate] addPathsToSourceList:paths];
+        [CCRAppDelegate.sharedAppDelegate addPathsToSourceList:paths];
     }
     
     return YES;

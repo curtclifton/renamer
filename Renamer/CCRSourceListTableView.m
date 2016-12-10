@@ -17,10 +17,10 @@
     NSString* key = [theEvent charactersIgnoringModifiers];
     
     if ([key isEqualToString:@" "]) {
-        [[NSApp delegate] quickLookSelection];
+        [CCRAppDelegate.sharedAppDelegate quickLookSelection];
         return;
     } else if (theEvent.keyCode == 51) { // delete
-        [[NSApp delegate] removeSelectedItem];
+        [CCRAppDelegate.sharedAppDelegate removeSelectedItem];
         return;
     }
     [super keyDown:theEvent];

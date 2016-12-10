@@ -90,6 +90,13 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     menuItemTitles = @{@"quicklook:" : [MenuItemTitles menuItemTitlesWithDisabledTitle:@"Quick Look" enabledFormat:@"Quick Look “%@”"], @"renameAndFile:" : [MenuItemTitles menuItemTitlesWithDisabledTitle:@"Rename and File…" enabledFormat:@"Rename “%@” and File…" ], @"removeFromList:" : [MenuItemTitles menuItemTitlesWithDisabledTitle:@"Remove from List" enabledFormat:@"Remove “%@” from List"]};
 }
 
++ (CCRAppDelegate *)sharedAppDelegate
+{
+    NSApplication *app = [NSApplication sharedApplication];
+    id delegate = app.delegate;
+    return (CCRAppDelegate *)delegate;
+}
+
 + (NSString *)stringBySanitizingString:(NSString *)tagOrTitleString;
 {
     NSString *result = [[tagOrTitleString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] lowercaseString];
