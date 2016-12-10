@@ -538,7 +538,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
     [components setDay:1];
     NSCalendar *calendar = [NSCalendar currentCalendar];
     
-    NSRange range = [calendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:[calendar dateFromComponents:components]];
+    NSRange range = [calendar rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:[calendar dateFromComponents:components]];
     return range.length;
 }
 
@@ -581,7 +581,7 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         }
         
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        [paragraphStyle setAlignment:NSCenterTextAlignment];
+        [paragraphStyle setAlignment:NSTextAlignmentCenter];
         [paragraphStyle setLineBreakMode:NSLineBreakByTruncatingTail];
         [computedName addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, computedName.length)];
         
@@ -643,7 +643,11 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
             NSString *title = NSLocalizedString(@"Unable to Remove Existing File", @"error sheet title");
             NSString *message = NSLocalizedString(@"Sorry. An error occurred while trying to delete the existing file: %@", @"error sheet message");
             NSString *defaultButton = NSLocalizedString(@"Drat", @"error sheet button text");
-            NSBeginAlertSheet(title, defaultButton, nil, nil, self.window, nil, NULL, NULL, NULL, message, error);
+            NSAlert *alert = [[NSAlert alloc] init];
+            alert.informativeText = title;
+            alert.messageText = message;
+            [alert addButtonWithTitle:defaultButton];
+            [alert beginSheetModalForWindow:self.window completionHandler:nil];
             return;
         }
     } else if ( ! ([[error domain] isEqualToString:NSCocoaErrorDomain] && [error code] == NSFileReadNoSuchFileError)) {
@@ -657,7 +661,11 @@ typedef NSInteger(^DecimalValueTransformer)(NSInteger);
         NSString *title = NSLocalizedString(@"Unable to Rename File", @"error sheet title");
         NSString *message = NSLocalizedString(@"Sorry. An error occurred while trying to rename the file: %@", @"error sheet message");
         NSString *defaultButton = NSLocalizedString(@"Drat", @"error sheet button text");
-        NSBeginAlertSheet(title, defaultButton, nil, nil, self.window, nil, NULL, NULL, NULL, message, error);
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.informativeText = title;
+        alert.messageText = message;
+        [alert addButtonWithTitle:defaultButton];
+        [alert beginSheetModalForWindow:self.window completionHandler:nil];
         return;
     }
 
